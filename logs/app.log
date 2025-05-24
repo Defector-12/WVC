@@ -1,0 +1,170 @@
+[2025-04-13T06:28:23.361Z] [info] 服务器运行在端口 3000
+[2025-04-13T06:31:51.786Z] [info] 服务器运行在端口 3000
+[2025-04-13T06:53:59.303Z] [info] 服务器运行在端口 3000
+[2025-04-13T06:56:36.929Z] [info] 收到请求: POST /api/terminology
+[2025-04-13T06:56:36.930Z] [info] 收到术语翻译请求
+[2025-04-13T06:56:36.930Z] [info] 开始处理请求: 1...
+[2025-04-13T06:56:37.123Z] [warn] 操作失败，2次重试机会
+[2025-04-13T06:56:38.158Z] [warn] 操作失败，1次重试机会
+[2025-04-13T06:56:39.185Z] [error] 模型调用错误: Error: 翻译失败: 模型调用失败: API请求失败: 401 Unauthorized
+    at TranslationService.startTranslationSession (file:///I:/AIcoding/Build%20on%20Trae/guantong2/src/services/translationservice.js:23:19)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async file:///I:/AIcoding/Build%20on%20Trae/guantong2/src/server.js:118:20
+    at async retryOperation (file:///I:/AIcoding/Build%20on%20Trae/guantong2/src/server.js:35:20)
+    at async callModel (file:///I:/AIcoding/Build%20on%20Trae/guantong2/src/server.js:117:24)
+    at async file:///I:/AIcoding/Build%20on%20Trae/guantong2/src/server.js:140:5
+[2025-04-13T08:43:14.931Z] [info] 服务器运行在端口 3000
+[2025-04-13T08:50:38.882Z] [info] 收到请求: POST /api/terminology
+[2025-04-13T08:50:38.887Z] [info] 收到术语翻译请求
+[2025-04-13T08:50:38.888Z] [info] 开始处理请求: 1...
+[2025-04-13T08:50:39.068Z] [warn] 操作失败，2次重试机会
+[2025-04-13T08:50:40.100Z] [warn] 操作失败，1次重试机会
+[2025-04-13T08:50:41.189Z] [error] 模型调用错误: Error: 翻译失败: 模型调用失败: API请求失败: 401 Unauthorized
+    at TranslationService.startTranslationSession (file:///I:/AIcoding/Build%20on%20Trae/guantong2/src/services/translationservice.js:23:19)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async file:///I:/AIcoding/Build%20on%20Trae/guantong2/src/server.js:118:20
+    at async retryOperation (file:///I:/AIcoding/Build%20on%20Trae/guantong2/src/server.js:35:20)
+    at async callModel (file:///I:/AIcoding/Build%20on%20Trae/guantong2/src/server.js:117:24)
+    at async file:///I:/AIcoding/Build%20on%20Trae/guantong2/src/server.js:140:5
+[2025-04-13T08:54:19.493Z] [info] 收到请求: POST /api/terminology
+[2025-04-13T08:54:19.494Z] [info] 收到术语翻译请求
+[2025-04-13T08:54:19.495Z] [info] 开始处理请求: 1...
+[2025-04-13T08:54:19.579Z] [warn] 操作失败，2次重试机会
+[2025-04-13T08:54:20.618Z] [warn] 操作失败，1次重试机会
+[2025-04-13T08:54:21.652Z] [error] 模型调用错误: Error: 翻译失败: 模型调用失败: API请求失败: 401 Unauthorized
+    at TranslationService.startTranslationSession (file:///I:/AIcoding/Build%20on%20Trae/guantong2/src/services/translationservice.js:23:19)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async file:///I:/AIcoding/Build%20on%20Trae/guantong2/src/server.js:118:20
+    at async retryOperation (file:///I:/AIcoding/Build%20on%20Trae/guantong2/src/server.js:35:20)
+    at async callModel (file:///I:/AIcoding/Build%20on%20Trae/guantong2/src/server.js:117:24)
+    at async file:///I:/AIcoding/Build%20on%20Trae/guantong2/src/server.js:140:5
+[2025-04-13T08:57:47.557Z] [info] 服务器运行在端口 3000
+[2025-04-13T08:58:23.369Z] [info] 收到请求: POST /api/terminology
+[2025-04-13T08:58:23.370Z] [info] 收到术语翻译请求
+[2025-04-13T08:58:23.370Z] [info] 开始处理请求: 1...
+[2025-04-13T08:58:23.536Z] [warn] 操作失败，2次重试机会
+[2025-04-13T08:58:24.567Z] [warn] 操作失败，1次重试机会
+[2025-04-13T08:58:25.589Z] [error] 模型调用错误: Error: 翻译失败: 模型调用失败: API请求失败: 401 Unauthorized
+    at TranslationService.startTranslationSession (file:///I:/AIcoding/Build%20on%20Trae/guantong2/src/services/translationservice.js:23:19)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async file:///I:/AIcoding/Build%20on%20Trae/guantong2/src/server.js:122:20
+    at async retryOperation (file:///I:/AIcoding/Build%20on%20Trae/guantong2/src/server.js:39:20)
+    at async callModel (file:///I:/AIcoding/Build%20on%20Trae/guantong2/src/server.js:121:24)
+    at async file:///I:/AIcoding/Build%20on%20Trae/guantong2/src/server.js:144:5
+[2025-04-13T09:00:06.861Z] [info] 服务器运行在端口 3000
+[2025-04-13T09:00:14.462Z] [info] 收到请求: POST /api/terminology
+[2025-04-13T09:00:14.463Z] [info] 收到术语翻译请求
+[2025-04-13T09:00:14.465Z] [info] 开始处理请求: 1...
+[2025-04-13T09:00:14.653Z] [warn] 操作失败，2次重试机会
+[2025-04-13T09:00:15.687Z] [warn] 操作失败，1次重试机会
+[2025-04-13T09:00:16.722Z] [error] 模型调用错误: Error: 翻译失败: 模型调用失败: API请求失败: 401 Unauthorized
+    at TranslationService.startTranslationSession (file:///I:/AIcoding/Build%20on%20Trae/guantong2/src/services/translationservice.js:23:19)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async file:///I:/AIcoding/Build%20on%20Trae/guantong2/src/server.js:122:20
+    at async retryOperation (file:///I:/AIcoding/Build%20on%20Trae/guantong2/src/server.js:39:20)
+    at async callModel (file:///I:/AIcoding/Build%20on%20Trae/guantong2/src/server.js:121:24)
+    at async file:///I:/AIcoding/Build%20on%20Trae/guantong2/src/server.js:144:5
+[2025-04-13T09:00:50.118Z] [info] 服务器运行在端口 3000
+[2025-04-13T09:01:04.125Z] [info] 收到请求: POST /api/terminology
+[2025-04-13T09:01:04.126Z] [info] 收到术语翻译请求
+[2025-04-13T09:01:04.127Z] [info] 开始处理请求: 1...
+[2025-04-13T09:01:04.285Z] [warn] 操作失败，2次重试机会
+[2025-04-13T09:01:05.321Z] [warn] 操作失败，1次重试机会
+[2025-04-13T09:01:06.362Z] [error] 模型调用错误: Error: 翻译失败: 模型调用失败: API请求失败: 401 Unauthorized
+    at TranslationService.startTranslationSession (file:///I:/AIcoding/Build%20on%20Trae/guantong2/src/services/translationservice.js:23:19)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async file:///I:/AIcoding/Build%20on%20Trae/guantong2/src/server.js:122:20
+    at async retryOperation (file:///I:/AIcoding/Build%20on%20Trae/guantong2/src/server.js:39:20)
+    at async callModel (file:///I:/AIcoding/Build%20on%20Trae/guantong2/src/server.js:121:24)
+    at async file:///I:/AIcoding/Build%20on%20Trae/guantong2/src/server.js:144:5
+[2025-04-13T09:04:10.488Z] [info] 服务器运行在端口 3000
+[2025-04-13T09:04:20.617Z] [info] 收到请求: POST /api/terminology
+[2025-04-13T09:04:20.618Z] [info] 收到术语翻译请求
+[2025-04-13T09:04:20.618Z] [info] 开始处理请求: 1...
+[2025-04-13T09:04:21.804Z] [warn] 操作失败，2次重试机会
+[2025-04-13T09:04:23.750Z] [warn] 操作失败，1次重试机会
+[2025-04-13T09:04:25.563Z] [error] 模型调用错误: Error: 翻译失败: 模型调用失败: 模型调用失败
+    at TranslationService.startTranslationSession (file:///I:/AIcoding/Build%20on%20Trae/guantong2/src/services/translationservice.js:23:19)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async file:///I:/AIcoding/Build%20on%20Trae/guantong2/src/server.js:129:20
+    at async retryOperation (file:///I:/AIcoding/Build%20on%20Trae/guantong2/src/server.js:46:20)
+    at async callModel (file:///I:/AIcoding/Build%20on%20Trae/guantong2/src/server.js:128:24)
+    at async file:///I:/AIcoding/Build%20on%20Trae/guantong2/src/server.js:151:5
+[2025-04-13T09:05:11.402Z] [info] 服务器运行在端口 3000
+[2025-04-13T09:05:16.490Z] [info] 收到请求: POST /api/terminology
+[2025-04-13T09:05:16.491Z] [info] 收到术语翻译请求
+[2025-04-13T09:05:16.491Z] [info] 开始处理请求: 1...
+[2025-04-13T09:05:17.307Z] [info] 请求处理完成
+[2025-04-13T09:05:25.814Z] [info] 收到请求: POST /api/terminology
+[2025-04-13T09:05:25.815Z] [info] 收到术语翻译请求
+[2025-04-13T09:05:25.815Z] [info] 开始处理请求: 你好翻译成英文...
+[2025-04-13T09:05:26.149Z] [info] 请求处理完成
+[2025-04-13T09:05:36.422Z] [info] 收到请求: POST /api/consulting
+[2025-04-13T09:07:35.960Z] [info] 服务器运行在端口 3000
+[2025-04-13T09:07:41.692Z] [info] 收到请求: POST /api/terminology
+[2025-04-13T09:07:41.693Z] [info] 收到术语翻译请求
+[2025-04-13T09:07:41.694Z] [info] 开始处理请求: 1...
+[2025-04-13T09:07:42.617Z] [info] 请求处理完成
+[2025-04-13T09:07:45.138Z] [info] 收到请求: POST /api/consulting
+[2025-04-13T09:08:03.492Z] [info] 收到请求: POST /api/consulting
+[2025-04-13T09:10:23.985Z] [info] 服务器运行在端口 3000
+[2025-04-13T09:10:29.568Z] [info] 收到请求: POST /api/terminology
+[2025-04-13T09:10:29.569Z] [info] 收到术语翻译请求
+[2025-04-13T09:10:29.570Z] [info] 开始处理terminology请求: 1...
+[2025-04-13T09:10:31.906Z] [info] 请求处理完成
+[2025-04-13T09:10:38.065Z] [info] 收到请求: POST /api/consulting
+[2025-04-13T09:10:42.867Z] [info] 收到请求: POST /api/valuation
+[2025-04-13T09:10:42.868Z] [info] 收到海关估价请求
+[2025-04-13T09:10:42.869Z] [info] 开始处理valuation请求: 1...
+[2025-04-13T09:10:58.187Z] [info] 请求处理完成
+[2025-04-13T09:11:08.481Z] [info] 收到请求: POST /api/consulting
+[2025-04-13T09:13:03.205Z] [info] 服务器运行在端口 3000
+[2025-04-13T09:13:08.795Z] [info] 收到请求: POST /api/consulting
+[2025-04-13T09:13:59.562Z] [info] 服务器运行在端口 3000
+[2025-04-13T09:15:11.616Z] [info] 服务器运行在端口 3000
+[2025-04-13T09:16:12.925Z] [info] 服务器运行在端口 3000
+[2025-04-13T09:16:24.165Z] [info] 收到请求: POST /api/terminology
+[2025-04-13T09:16:24.166Z] [info] 收到术语翻译请求
+[2025-04-13T09:16:24.166Z] [info] 开始处理terminology请求: 1...
+[2025-04-13T09:16:25.712Z] [info] 请求处理完成
+[2025-04-13T09:16:29.165Z] [info] 收到请求: POST /api/customs-consulting
+[2025-04-13T09:16:29.166Z] [info] 收到关务咨询请求
+[2025-04-13T09:16:29.167Z] [info] 开始处理customs-consulting请求: 2...
+[2025-04-13T09:16:42.741Z] [info] 请求处理完成
+[2025-04-13T09:16:48.045Z] [info] 收到请求: POST /api/valuation
+[2025-04-13T09:16:48.045Z] [info] 收到海关估价请求
+[2025-04-13T09:16:48.046Z] [info] 开始处理valuation请求: 2...
+[2025-04-13T09:16:56.483Z] [info] 请求处理完成
+[2025-04-13T09:38:04.568Z][info] 服务器已启动，监听端口 3000
+[2025-04-13T09:39:53.520Z][info] 收到请求: POST /api/terminology from ::1
+[2025-04-13T09:39:53.521Z][error] 未找到请求的资源: /api/terminology
+[2025-04-13T09:40:26.672Z][info] 收到请求: POST /api/terminology from ::1
+[2025-04-13T09:40:26.673Z][error] 未找到请求的资源: /api/terminology
+[2025-04-13T09:41:06.408Z][info] 收到请求: POST /api/terminology from ::1
+[2025-04-13T09:41:06.409Z][error] 未找到请求的资源: /api/terminology
+[2025-04-13T09:42:32.684Z] [info] 服务器运行在端口 3000
+[2025-04-13T09:42:38.059Z] [info] 收到请求: POST /api/terminology
+[2025-04-13T09:42:38.060Z] [info] 收到术语翻译请求
+[2025-04-13T09:42:38.060Z] [info] 开始处理terminology请求: 1...
+[2025-04-13T09:42:39.329Z] [info] 请求处理完成
+[2025-04-13T09:42:42.465Z] [info] 收到请求: POST /api/customs-consulting
+[2025-04-13T09:42:42.466Z] [info] 收到关务咨询请求
+[2025-04-13T09:42:42.466Z] [info] 开始处理customs-consulting请求: 2...
+[2025-04-13T09:42:55.009Z] [info] 请求处理完成
+[2025-04-13T09:43:16.966Z] [info] 收到请求: POST /api/valuation
+[2025-04-13T09:43:16.968Z] [info] 收到海关估价请求
+[2025-04-13T09:43:16.968Z] [info] 开始处理valuation请求: 1...
+[2025-04-13T09:43:21.434Z] [info] 请求处理完成
+[2025-04-13T09:44:28.971Z] [info] 服务器运行在端口 3000
+[2025-04-13T09:44:51.776Z] [info] 收到请求: POST /api/terminology
+[2025-04-13T09:44:51.777Z] [info] 收到术语翻译请求
+[2025-04-13T09:44:51.778Z] [info] 开始处理terminology请求: 1...
+[2025-04-13T09:44:53.489Z] [info] 请求处理完成
+[2025-04-13T09:44:57.556Z] [info] 收到请求: POST /api/customs-consulting
+[2025-04-13T09:44:57.556Z] [info] 收到关务咨询请求
+[2025-04-13T09:44:57.557Z] [info] 开始处理customs-consulting请求: 1...
+[2025-04-13T09:45:27.904Z] [info] 请求处理完成
+[2025-04-13T09:49:13.311Z] [info] 收到请求: POST /api/terminology
+[2025-04-13T09:49:13.312Z] [info] 收到术语翻译请求
+[2025-04-13T09:49:13.312Z] [info] 开始处理terminology请求: 1...
+[2025-04-13T09:49:17.659Z] [info] 请求处理完成

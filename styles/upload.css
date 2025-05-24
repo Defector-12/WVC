@@ -1,0 +1,244 @@
+/* 现代化文件上传区域样式 */
+.file-upload-zone {
+    border: 2px dashed rgba(102, 126, 234, 0.3);
+    border-radius: 16px;
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%);
+    padding: 24px;
+    text-align: center;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+}
+
+.file-upload-zone::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(102, 126, 234, 0.1) 0%, transparent 70%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+}
+
+.file-upload-zone:hover,
+.file-upload-zone.drag-over {
+    border-color: #667eea;
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.2);
+}
+
+.file-upload-zone:hover::before,
+.file-upload-zone.drag-over::before {
+    opacity: 1;
+}
+
+.file-upload-icon {
+    font-size: 2.5rem;
+    color: #667eea;
+    margin-bottom: 12px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    filter: drop-shadow(0 4px 8px rgba(102, 126, 234, 0.2));
+}
+
+.file-upload-zone:hover .file-upload-icon {
+    color: #764ba2;
+    transform: scale(1.1) translateY(-4px);
+    filter: drop-shadow(0 8px 16px rgba(102, 126, 234, 0.3));
+}
+
+.file-upload-text {
+    color: #4a5568;
+    font-size: 1rem;
+    font-weight: 500;
+    margin-bottom: 8px;
+    transition: color 0.3s ease;
+}
+
+.file-upload-zone:hover .file-upload-text {
+    color: #667eea;
+}
+
+.file-upload-hint {
+    color: #718096;
+    font-size: 0.875rem;
+    opacity: 0.8;
+    transition: all 0.3s ease;
+}
+
+.file-upload-zone:hover .file-upload-hint {
+    opacity: 1;
+    color: #764ba2;
+}
+
+/* 文件信息显示区域 */
+.file-info {
+    display: flex;
+    align-items: center;
+    padding: 12px 16px;
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+    border: 2px solid rgba(102, 126, 234, 0.2);
+    border-radius: 12px;
+    margin-top: 12px;
+    animation: slideInUp 0.3s ease;
+    backdrop-filter: blur(10px);
+}
+
+.file-info-name {
+    flex: 1;
+    margin-right: 12px;
+    color: #2d3748;
+    font-size: 0.875rem;
+    font-weight: 500;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.file-remove-button {
+    padding: 6px;
+    color: #e53e3e;
+    background: rgba(245, 101, 101, 0.1);
+    border-radius: 8px;
+    transition: all 0.2s ease;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.file-remove-button:hover {
+    color: #c53030;
+    background: rgba(245, 101, 101, 0.2);
+    transform: scale(1.1);
+}
+
+/* 拖拽状态动画 */
+.file-upload-zone.drag-over {
+    animation: dragPulse 1s ease-in-out infinite;
+}
+
+@keyframes slideInUp {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes dragPulse {
+    0%, 100% {
+        transform: translateY(-2px) scale(1);
+    }
+    50% {
+        transform: translateY(-6px) scale(1.02);
+    }
+}
+
+/* 文件类型图标样式 */
+.file-type-icon {
+    width: 20px;
+    height: 20px;
+    margin-right: 8px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: bold;
+}
+
+/* 上传进度条 */
+.upload-progress {
+    width: 100%;
+    height: 4px;
+    background: rgba(102, 126, 234, 0.1);
+    border-radius: 2px;
+    overflow: hidden;
+    margin-top: 8px;
+}
+
+.upload-progress-bar {
+    height: 100%;
+    background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+    border-radius: 2px;
+    transition: width 0.3s ease;
+    position: relative;
+}
+
+.upload-progress-bar::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+    animation: shimmer 2s infinite;
+}
+
+@keyframes shimmer {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
+}
+
+/* 响应式优化 */
+@media (max-width: 768px) {
+    .file-upload-zone {
+        padding: 20px 16px;
+        border-radius: 12px;
+    }
+    
+    .file-upload-icon {
+        font-size: 2rem;
+        margin-bottom: 8px;
+    }
+    
+    .file-upload-text {
+        font-size: 0.875rem;
+    }
+    
+    .file-upload-hint {
+        font-size: 0.75rem;
+    }
+    
+    .file-info {
+        padding: 10px 12px;
+        border-radius: 8px;
+    }
+}
+
+/* 深色模式适配 */
+@media (prefers-color-scheme: dark) {
+    .file-upload-zone {
+        background: linear-gradient(135deg, rgba(102, 126, 234, 0.15) 0%, rgba(118, 75, 162, 0.15) 100%);
+        border-color: rgba(102, 126, 234, 0.4);
+    }
+    
+    .file-upload-text {
+        color: #e2e8f0;
+    }
+    
+    .file-upload-hint {
+        color: #a0aec0;
+    }
+    
+    .file-info {
+        background: rgba(102, 126, 234, 0.2);
+        border-color: rgba(102, 126, 234, 0.3);
+    }
+    
+    .file-info-name {
+        color: #f7fafc;
+    }
+}

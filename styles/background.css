@@ -1,0 +1,30 @@
+/* 背景图片样式 */
+body {
+    background-image: url('../assets/background.svg');
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    background-repeat: no-repeat;
+    position: relative;
+    min-height: 100vh;
+    backdrop-filter: blur(10px);
+}
+
+/* 优化背景遮罩效果 */
+body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.85));
+    z-index: -1;
+    pointer-events: none;
+}
+
+/* 确保内容在背景上方显示 */
+.content-area {
+    position: relative;
+    z-index: 1;
+}

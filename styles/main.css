@@ -1,0 +1,19 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* 自定义样式 */
+@layer base {
+  body {
+    font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  }
+}
+
+@layer components {
+  .sidebar {
+    @apply transition-all duration-300;
+  }
+  .content-area {
+    @apply transition-all duration-300;
+  }
+}

@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WVC海关行业大模型 - 账户设置</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="styles/common.css">
+    <link rel="stylesheet" href="styles/navigation.css">
+    <style>
+        body {
+            font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif;
+        }
+        
+        /* 桌面端默认样式 */
+        .settings-card {
+            transition: all 0.3s ease;
+        }
+        
+        .settings-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+        
+        .settings-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+        
+        .content-area {
+            padding-top: 0;
+        }
+        
+        .form-container {
+            max-width: none;
+        }
+        
+        /* 移动端样式 */
+        @media (max-width: 767px) {
+            .mobile-header {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                padding: 1rem;
+                background: #1e40af;
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                z-index: 40;
+            }
+            
+            .content-area {
+                padding-top: 72px;
+            }
+            
+            .settings-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .form-container {
+                max-width: 100%;
+            }
+        }
+        
+        /* 桌面端样式 */
+        @media (min-width: 768px) {
+            .mobile-header {
+                display: none;
+            }
+        }
+        
+        /* 开关按钮样式 */
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 48px;
+            height: 24px;
+        }
+        
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 24px;
+        }
+        
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 20px;
+            width: 20px;
+            left: 2px;
+            bottom: 2px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        
+        input:checked + .toggle-slider {
+            background-color: #3b82f6;
+        }
+        
+        input:checked + .toggle-slider:before {
+            transform: translateX(24px);
+        }
+    </style>
+</head>
+<body class="bg-gray-100">
+    <!-- 移动端顶部导航 -->
+    <header class="mobile-header">
+        <a href="user-center.html" class="text-white">
+            <i class="fas fa-arrow-left text-xl"></i>
+        </a>
+        <h1 class="text-white text-lg font-semibold">账户设置</h1>
+        <div class="w-8"></div>
+    </header>
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- 基本信息设置 -->
+        <div class="bg-white rounded-xl shadow-md p-6 mb-8">
+            <h2 class="text-xl font-bold text-gray-800 mb-6">基本信息</h2>
+            <div class="grid grid-cols-1 gap-6">
+                <div class="flex items-center space-x-6">
+                    <div class="flex-shrink-0">
+                        <div class="relative">
+                            <div class="w-24 h-24 bg-blue-100 rounded-full flex items-center justify-center">
+                                <i class="fas fa-user text-4xl text-blue-600"></i>
+                            </div>
+                            <button class="absolute bottom-0 right-0 w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center text-white hover:bg-blue-700">
+                                <i class="fas fa-camera"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="flex-grow">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">用户名</label>
+                                <input type="text" value="张三" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">企业名称</label>
+                                <input type="text" value="某某贸易有限公司" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">联系电话</label>
+                        <input type="tel" value="13800138000" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">电子邮箱</label>
+                        <input type="email" value="example@company.com" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">公司地址</label>
+                    <input type="text" value="广东省深圳市南山区科技园" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+                <div class="flex justify-end">
+                    <button class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+                        保存修改
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 安全设置 -->
+        <div class="bg-white rounded-xl shadow-md p-6 mb-8">
+            <h2 class="text-xl font-bold text-gray-800 mb-6">安全设置</h2>
+            <div class="space-y-6">
+                <div class="flex items-center justify-between p-4 border border-gray-200 rounded-lg">
+                    <div>
+                        <h3 class="text-lg font-medium text-gray-800">修改密码</h3>
+                        <p class="text-gray-500 text-sm mt-1">定期更改密码可以提高账户安全性</p>
+                    </div>
+                    <button class="px-4 py-2 text-blue-600 hover:text-blue-800">
+                        修改
+                    </button>
+                </div>
+                <div class="flex items-center justify-between p-4 border border-gray-200 rounded-lg">
+                    <div>
+                        <h3 class="text-lg font-medium text-gray-800">双重认证</h3>
+                        <p class="text-gray-500 text-sm mt-1">开启双重认证，提供额外的安全保护</p>
+                    </div>
+                    <label class="toggle-switch">
+                        <input type="checkbox" checked>
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+                <div class="flex items-center justify-between p-4 border border-gray-200 rounded-lg">
+                    <div>
+                        <h3 class="text-lg font-medium text-gray-800">登录设备管理</h3>
+                        <p class="text-gray-500 text-sm mt-1">查看并管理已登录的设备</p>
+                    </div>
+                    <button class="px-4 py-2 text-blue-600 hover:text-blue-800">
+                        管理
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 通知设置 -->
+        <div class="bg-white rounded-xl shadow-md p-6">
+            <h2 class="text-xl font-bold text-gray-800 mb-6">通知设置</h2>
+            <div class="space-y-6">
+                <div class="flex items-center justify-between p-4 border border-gray-200 rounded-lg">
+                    <div>
+                        <h3 class="text-lg font-medium text-gray-800">任务完成通知</h3>
+                        <p class="text-gray-500 text-sm mt-1">当任务完成时通过邮件通知</p>
+                    </div>
+                    <label class="toggle-switch">
+                        <input type="checkbox" checked>
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+                <div class="flex items-center justify-between p-4 border border-gray-200 rounded-lg">
+                    <div>
+                        <h3 class="text-lg font-medium text-gray-800">系统更新通知</h3>
+                        <p class="text-gray-500 text-sm mt-1">接收系统更新和新功能通知</p>
+                    </div>
+                    <label class="toggle-switch">
+                        <input type="checkbox" checked>
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+                <div class="flex items-center justify-between p-4 border border-gray-200 rounded-lg">
+                    <div>
+                        <h3 class="text-lg font-medium text-gray-800">会员到期提醒</h3>
+                        <p class="text-gray-500 text-sm mt-1">会员即将到期时提前提醒</p>
+                    </div>
+                    <label class="toggle-switch">
+                        <input type="checkbox" checked>
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+                <div class="flex items-center justify-between p-4 border border-gray-200 rounded-lg">
+                    <div>
+                        <h3 class="text-lg font-medium text-gray-800">营销信息</h3>
+                        <p class="text-gray-500 text-sm mt-1">接收优惠活动和产品更新信息</p>
+                    </div>
+                    <label class="toggle-switch">
+                        <input type="checkbox">
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html> 

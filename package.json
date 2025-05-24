@@ -1,0 +1,49 @@
+{
+  "name": "customs-professional-translation",
+  "version": "2.0.0",
+  "description": "海关专业翻译AI助手 - 基于DashScope专业模型和VIVO蓝心大模型的双重保障翻译系统",
+  "main": "src/server.js",
+  "type": "module",
+  "scripts": {
+    "dev": "node src/server.js",
+    "start": "node src/server.js",
+    "python-server": "python vivogpt.py",
+    "python-dev": "uvicorn vivogpt:app --host 0.0.0.0 --port 8000 --reload",
+    "install-python": "pip install -r requirements.txt",
+    "build": "tailwindcss -i ./src/input.css -o ./styles/output.css --watch"
+  },
+  "dependencies": {
+    "body-parser": "^1.20.2",
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "express-fileupload": "^1.4.3",
+    "http-status-codes": "^2.2.0",
+    "multer": "^1.4.5-lts.1",
+    "node-fetch": "^3.3.2"
+  },
+  "devDependencies": {
+    "autoprefixer": "^10.4.16",
+    "postcss": "^8.4.32",
+    "tailwindcss": "^3.3.6"
+  },
+  "keywords": [
+    "customs",
+    "translation", 
+    "ai",
+    "dashscope",
+    "vivo",
+    "海关翻译",
+    "专业翻译"
+  ],
+  "author": "Customs Translation Team",
+  "license": "ISC",
+  "engines": {
+    "node": ">=14.0.0",
+    "python": ">=3.8.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "customs-professional-translation"
+  }
+}

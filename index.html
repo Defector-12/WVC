@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="theme-color" content="#1890ff">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>WVC海关行业大模型</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="styles/common.css">
+    <link rel="stylesheet" href="styles/background.css">
+    <link rel="stylesheet" href="styles/navigation.css">
+    <style>
+        body {
+            font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif;
+        }
+        
+        /* 动画效果 */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
+        }
+        
+        .animate-fadeInUp {
+            animation: fadeInUp 0.8s ease forwards;
+        }
+        
+        .animate-float {
+            animation: float 3s ease-in-out infinite;
+        }
+        
+        /* 特性卡片样式 */
+        .feature-card {
+            background: white;
+            transition: all 0.3s ease;
+        }
+        
+        .feature-card.blue-theme:hover {
+            background: linear-gradient(135deg, #60a5fa20, white);
+            transform: translateY(-5px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+        
+        .feature-card.green-theme:hover {
+            background: linear-gradient(135deg, #34d39920, white);
+            transform: translateY(-5px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+        
+        .feature-card.purple-theme:hover {
+            background: linear-gradient(135deg, #a78bfa20, white);
+            transform: translateY(-5px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+        
+        .feature-card.orange-theme:hover {
+            background: linear-gradient(135deg, #f59e0b20, white);
+            transform: translateY(-5px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+        
+        /* 优化标题和副标题容器 */
+        .title-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 3rem 1rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            align-items: center;
+        }
+
+        /* 优化标题样式 */
+        .main-title {
+            font-size: clamp(2rem, 4vw, 3rem);
+            font-weight: 700;
+            background: linear-gradient(120deg, #1a365d, #2563eb);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            position: relative;
+            display: block;
+            padding-bottom: 1rem;
+            letter-spacing: -0.02em;
+            line-height: 1.4;
+            width: 100%;
+            text-align: center;
+        }
+
+        .main-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 25%;
+            width: 50%;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, #2563eb, transparent);
+        }
+
+        /* 优化副标题样式 */
+        .subtitle {
+            font-size: clamp(1.125rem, 2vw, 1.5rem);
+            color: #4b5563;
+            position: relative;
+            display: block;
+            padding: 1rem 2rem;
+            margin-top: 0.5rem;
+            letter-spacing: 0.02em;
+            line-height: 1.8;
+            width: 100%;
+            max-width: 800px;
+            text-align: center;
+        }
+
+        .subtitle::before,
+        .subtitle::after {
+            content: '';
+            position: absolute;
+            width: 40px;
+            height: 2px;
+            background: #93c5fd;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        .subtitle::before {
+            left: 0;
+        }
+
+        .subtitle::after {
+            right: 0;
+        }
+
+        /* 响应式调整 */
+        @media (min-width: 1920px) {
+            .title-container {
+                padding: 4rem 2rem;
+                gap: 2rem;
+            }
+
+            .main-title {
+                font-size: 3.5rem;
+            }
+
+            .subtitle {
+                font-size: 1.75rem;
+                max-width: 1000px;
+            }
+
+            .subtitle::before,
+            .subtitle::after {
+                width: 60px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .title-container {
+                padding: 2rem 1rem;
+                gap: 1rem;
+            }
+
+            .main-title {
+                font-size: 2rem;
+                padding-bottom: 0.75rem;
+            }
+
+            .subtitle {
+                font-size: 1.125rem;
+                padding: 0.75rem 1.5rem;
+            }
+
+            .subtitle::before,
+            .subtitle::after {
+                width: 20px;
+            }
+        }
+
+        /* 深色模式支持 */
+        @media (prefers-color-scheme: dark) {
+            body {
+                background-color: #1a1a1a;
+                color: #e5e7eb;
+            }
+            
+            .feature-card {
+                background: #2d2d2d;
+            }
+            
+            .feature-card p {
+                color: #9ca3af;
+            }
+            
+            .main-title {
+                background: linear-gradient(120deg, #60a5fa, #93c5fd);
+                -webkit-background-clip: text;
+                -webkit-text-fill-color: transparent;
+            }
+            
+            .subtitle {
+                color: #9ca3af;
+            }
+            
+            .subtitle::before,
+            .subtitle::after {
+                background: #60a5fa;
+            }
+        }
+        
+        /* 可访问性优化 */
+        .focus-visible:focus {
+            outline: 2px solid #2563eb;
+            outline-offset: 2px;
+        }
+        
+        /* 加载优化 */
+        .content-visibility {
+            content-visibility: auto;
+            contain-intrinsic-size: 0 500px;
+        }
+
+        /* 侧边栏优化 - 与terminology.html保持一致 */
+        .sidebar {
+            background: linear-gradient(180deg, #1e3a8a 0%, #1e40af 100%);
+            border-right: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 4px 0 20px rgba(0, 0, 0, 0.1);
+        }
+        
+        /* 简化标题区域 - 完全去掉矩形装饰 */
+        .sidebar-header {
+            padding: 2rem 1.5rem;
+            border: none;
+            background: transparent;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .sidebar-title {
+            color: white;
+            font-size: 1.25rem;
+            font-weight: 700;
+            text-align: center;
+            transition: all 0.3s ease;
+            letter-spacing: 0.025em;
+            border: none;
+            background: transparent;
+            outline: none;
+            box-shadow: none;
+        }
+        
+        .sidebar-title a {
+            border: none;
+            background: transparent;
+            outline: none;
+            box-shadow: none;
+            text-decoration: none;
+        }
+        
+        .sidebar-title:hover {
+            color: rgba(255, 255, 255, 0.9);
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+        }
+        
+        /* 简化副标题区域 */
+        .sidebar-subtitle {
+            padding: 1rem 1.5rem;
+            text-align: center;
+            background: transparent;
+        }
+        
+        .sidebar-subtitle p {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.875rem;
+            margin: 0;
+            font-weight: 400;
+        }
+        
+        .nav-item {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border-radius: 12px;
+            margin: 4px 0;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .nav-item::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: 0;
+            background: rgba(255, 255, 255, 0.1);
+            transition: width 0.3s ease;
+        }
+        
+        .nav-item:hover::before {
+            width: 100%;
+        }
+        
+        .nav-item:hover {
+            transform: translateX(8px);
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        /* 移动端导航样式 */
+        @media (max-width: 767px) {
+            .sidebar {
+                position: fixed;
+                left: -100%;
+                top: 0;
+                width: 80%;
+                max-width: 300px;
+                height: 100%;
+                z-index: 50;
+                transition: left 0.3s ease;
+            }
+            
+            .sidebar.active {
+                left: 0;
+            }
+            
+            .mobile-header {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                padding: 1rem;
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                z-index: 40;
+            }
+            
+            .mobile-menu-button {
+                width: 40px;
+                height: 40px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                color: white;
+                border-radius: 8px;
+                background: rgba(255, 255, 255, 0.1);
+                border: none;
+                cursor: pointer;
+            }
+            
+            .mobile-overlay {
+                display: none;
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: rgba(0, 0, 0, 0.5);
+                z-index: 45;
+            }
+            
+            .mobile-overlay.active {
+                display: block;
+            }
+            
+            .content-area {
+                padding-top: 72px;
+            }
+        }
+        
+        /* 桌面端隐藏移动端元素 */
+        @media (min-width: 768px) {
+            .mobile-header,
+            .mobile-menu-button,
+            .mobile-overlay {
+                display: none;
+            }
+        }
+
+        /* 强制覆盖navigation.css中的样式 - 彻底去掉矩形框 */
+        .sidebar h1 {
+            position: relative !important;
+            overflow: visible !important;
+            background: none !important;
+            background-clip: unset !important;
+            -webkit-background-clip: unset !important;
+            color: white !important;
+            animation: none !important;
+            font-weight: 700 !important;
+            letter-spacing: 0.025em !important;
+            text-shadow: none !important;
+            border: none !important;
+            box-shadow: none !important;
+            outline: none !important;
+        }
+
+        .sidebar h1 a {
+            position: relative !important;
+            display: inline-block !important;
+            padding: 0 !important;
+            transition: all 0.3s ease !important;
+            border: none !important;
+            background: transparent !important;
+            outline: none !important;
+            box-shadow: none !important;
+            text-decoration: none !important;
+        }
+
+        .sidebar h1 a:hover {
+            transform: none !important;
+            text-shadow: none !important;
+        }
+
+        .sidebar h1 a::after {
+            display: none !important;
+        }
+
+        .sidebar .text-blue-200,
+        .sidebar p {
+            position: relative !important;
+            display: inline-block !important;
+            font-size: 0.875rem !important;
+            font-weight: 400 !important;
+            background: none !important;
+            background-clip: unset !important;
+            -webkit-background-clip: unset !important;
+            color: rgba(255, 255, 255, 0.7) !important;
+            opacity: 1 !important;
+            letter-spacing: 0.02em !important;
+            padding: 0 !important;
+            border-radius: 0 !important;
+            backdrop-filter: none !important;
+            -webkit-backdrop-filter: none !important;
+            border: none !important;
+            box-shadow: none !important;
+            transition: none !important;
+            outline: none !important;
+        }
+
+        .sidebar .text-blue-200:hover,
+        .sidebar p:hover {
+            opacity: 1 !important;
+            transform: none !important;
+            box-shadow: none !important;
+            border-color: transparent !important;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 flex h-screen overflow-hidden">
+    <!-- 页面加载进度条 -->
+    <div class="page-loading"></div>
+
+    <!-- 移动端顶部导航 -->
+    <header class="mobile-header md:hidden">
+        <button class="mobile-menu-button" aria-label="打开菜单">
+            <i class="fas fa-bars"></i>
+        </button>
+        <h1 class="text-white text-lg font-semibold">WVC海关大模型</h1>
+        <div class="w-10"></div>
+    </header>
+
+    <!-- 移动端遮罩层 -->
+    <div class="mobile-overlay"></div>
+
+    <!-- 左侧导航栏 - 简化设计 -->
+    <div class="sidebar w-64 text-white flex flex-col h-full">
+        <!-- 简化的标题区域 -->
+        <div class="sidebar-header">
+            <h1 class="sidebar-title">
+                <a href="index.html" class="text-white hover:text-blue-200 transition-colors">
+                    WVC海关行业大模型
+                </a>
+            </h1>
+        </div>
+        
+        <!-- 简化的副标题区域 -->
+        <div class="sidebar-subtitle">
+            <p>专业海关术语翻译与咨询服务</p>
+        </div>
+        
+        <nav class="flex-1">
+            <ul class="space-y-2 px-4">
+                <li>
+                    <a href="terminology.html" class="nav-item flex items-center space-x-3 p-3 rounded-lg hover:bg-blue-700 text-white">
+                        <i class="fas fa-language text-lg w-5 text-center"></i>
+                        <span>术语翻译</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="customs-consulting.html" class="nav-item flex items-center space-x-3 p-3 rounded-lg hover:bg-blue-700 text-white">
+                        <i class="fas fa-comments text-lg w-5 text-center"></i>
+                        <span>关务咨询</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="classification.html" class="nav-item flex items-center space-x-3 p-3 rounded-lg hover:bg-blue-700 text-white">
+                        <i class="fas fa-boxes text-lg w-5 text-center"></i>
+                        <span>商品归类</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="valuation.html" class="nav-item flex items-center space-x-3 p-3 rounded-lg hover:bg-blue-700 text-white">
+                        <i class="fas fa-calculator text-lg w-5 text-center"></i>
+                        <span>海关估价</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+        
+        <div class="p-4 border-t border-blue-700">
+            <a href="user-center.html" class="nav-item flex items-center space-x-3 p-3 rounded-lg hover:bg-blue-700 text-white">
+                <i class="fas fa-user text-lg w-5 text-center"></i>
+                <span>用户中心</span>
+            </a>
+        </div>
+    </div>
+    
+    <!-- 右侧主要内容区 -->
+    <div class="content-area flex-1 overflow-y-auto">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <div class="text-center mb-12 title-container">
+                <h2 class="main-title">欢迎使用WVC海关行业大模型</h2>
+                <p class="subtitle">专业的海关业务智能助手，为您提供全方位的海关事务解决方案</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 px-6 max-w-6xl mx-auto feature-grid">
+                <!-- 术语翻译卡片 -->
+                <div class="feature-card blue-theme rounded-2xl p-8 shadow-lg">
+                    <div>
+                        <div class="flex items-center mb-6">
+                            <i class="fas fa-language text-3xl text-blue-600"></i>
+                            <h3 class="text-xl font-semibold ml-4">术语翻译</h3>
+                        </div>
+                        <p class="text-gray-600 mb-6 leading-relaxed">专业的海关术语翻译服务，支持中英文互译，确保准确性</p>
+                        <a href="terminology.html" class="text-blue-600 hover:text-blue-800 font-medium inline-flex items-center group focus-visible">
+                        开始使用
+                        <span class="transform transition-transform group-hover:translate-x-1 ml-1">→</span>
+                    </a>
+                    </div>
+                </div>
+
+                <!-- 关务咨询卡片 -->
+                <div class="feature-card green-theme rounded-2xl p-8 shadow-lg">
+                    <div>
+                        <div class="flex items-center mb-6">
+                            <i class="fas fa-comments text-3xl text-green-600"></i>
+                            <h3 class="text-xl font-semibold ml-4">关务咨询</h3>
+                        </div>
+                        <p class="text-gray-600 mb-6 leading-relaxed">智能问答系统，解答您的海关业务相关问题</p>
+                        <a href="customs-consulting.html" class="text-green-600 hover:text-green-800 font-medium inline-flex items-center group focus-visible">
+                        开始咨询
+                        <span class="transform transition-transform group-hover:translate-x-1 ml-1">→</span>
+                    </a>
+                    </div>
+                </div>
+
+                <!-- 商品归类卡片 -->
+                <div class="feature-card purple-theme rounded-2xl p-8 shadow-lg">
+                    <div>
+                        <div class="flex items-center mb-6">
+                            <i class="fas fa-boxes text-3xl text-purple-600"></i>
+                            <h3 class="text-xl font-semibold ml-4">商品归类</h3>
+                        </div>
+                        <p class="text-gray-600 mb-6 leading-relaxed">准确的商品HS编码查询与归类建议服务</p>
+                        <a href="classification.html" class="text-purple-600 hover:text-purple-800 font-medium inline-flex items-center group focus-visible">
+                        开始归类
+                        <span class="transform transition-transform group-hover:translate-x-1 ml-1">→</span>
+                    </a>
+                    </div>
+                </div>
+
+                <!-- 海关估价卡片 -->
+                <div class="feature-card orange-theme rounded-2xl p-8 shadow-lg">
+                    <div>
+                        <div class="flex items-center mb-6">
+                            <i class="fas fa-calculator text-3xl text-orange-600"></i>
+                            <h3 class="text-xl font-semibold ml-4">海关估价</h3>
+                        </div>
+                        <p class="text-gray-600 mb-6 leading-relaxed">智能海关估价计算与建议服务</p>
+                        <a href="valuation.html" class="text-orange-600 hover:text-orange-800 font-medium inline-flex items-center group focus-visible">
+                        开始估价
+                        <span class="transform transition-transform group-hover:translate-x-1 ml-1">→</span>
+                    </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // 移动端菜单控制
+            const menuButton = document.querySelector('.mobile-menu-button');
+            const sidebar = document.querySelector('.sidebar');
+            const overlay = document.querySelector('.mobile-overlay');
+
+            menuButton?.addEventListener('click', () => {
+                sidebar.classList.toggle('active');
+                overlay.classList.toggle('active');
+            });
+
+            overlay?.addEventListener('click', () => {
+                sidebar.classList.remove('active');
+                overlay.classList.remove('active');
+            });
+
+            // 移除之前的卡片动画初始化代码
+            const featureCards = document.querySelectorAll('.feature-card');
+            featureCards.forEach(card => {
+                card.style.opacity = '1';
+            });
+
+            // 键盘导航支持
+            const focusableElements = document.querySelectorAll('a, button');
+            focusableElements.forEach(element => {
+                element.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        element.click();
+                    }
+                });
+            });
+
+            // 性能优化：延迟加载图标
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('animate-float');
+                        observer.unobserve(entry.target);
+                    }
+                });
+            });
+
+            document.querySelectorAll('.animate-float').forEach(element => {
+                observer.observe(element);
+            });
+
+            // 优化页面加载体验
+            const pageLoading = document.querySelector('.page-loading');
+            window.addEventListener('load', () => {
+                setTimeout(() => {
+                    pageLoading.style.opacity = '0';
+                    setTimeout(() => {
+                        pageLoading.style.display = 'none';
+                    }, 300);
+                }, 1000);
+            });
+
+            // 优化页面滚动性能
+            let isScrolling;
+            const contentArea = document.querySelector('.content-area');
+            
+            contentArea.addEventListener('scroll', () => {
+                window.clearTimeout(isScrolling);
+                
+                isScrolling = setTimeout(() => {
+                    // 滚动结束后的操作
+                    const scrollProgress = (contentArea.scrollTop / (contentArea.scrollHeight - contentArea.clientHeight)) * 100;
+                    
+                    // 如果滚动到底部，可以添加一些视觉反馈
+                    if (scrollProgress > 95) {
+                        contentArea.style.scrollBehavior = 'smooth';
+                    }
+                }, 66);
+            }, false);
+        });
+    </script>
+</body>
+</html>
