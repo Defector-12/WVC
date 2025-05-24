@@ -26,28 +26,64 @@ class DashScopeTranslationService:
         初始化DashScope翻译服务
         设置API密钥和模型ID
         """
-        # 翻译模型配置
-        self.api_key = os.getenv("DASHSCOPE_API_KEY", "sk-f8dcf20a07ac4b889d74f56b7bf654e7")
+        # 使用阿里云文档中提供的配置
+        self.api_key = "sk-fc310cd28bc74ff5be86913e3816f4d5"  # 阿里云文档中的API Key
         self.app_id = "43f10f032fce4a52b8c40e3eb5a01c5d"  # 训练好的海关翻译模型ID
-        
-        # 验证配置
-        if not self.api_key:
-            raise ValueError("DashScope API密钥未配置")
+        self.model_name = "qwen-plus-latest"  # 使用的模型
+        self.is_available = False
         
         # 尝试导入并配置DashScope
         try:
             import dashscope
-            from dashscope import Generation
-            dashscope.api_key = self.api_key
+            from dashscope import Application
+            from http import HTTPStatus
+            
             self.dashscope = dashscope
-            self.Generation = Generation
-            logger.info(f"DashScope翻译服务初始化成功，模型ID: {self.app_id}")
+            self.Application = Application
+            self.HTTPStatus = HTTPStatus
+            
+            # 设置API Key
+            os.environ['DASHSCOPE_API_KEY'] = self.api_key
+            self.dashscope.api_key = self.api_key
+            
+            # 测试连接
+            if self._test_connection():
+                self.is_available = True
+                logger.info(f"DashScope翻译服务初始化成功")
+                logger.info(f"- 模型ID: {self.app_id}")
+                logger.info(f"- 模型名称: {self.model_name}")
+            else:
+                logger.warning("DashScope翻译服务初始化失败：无法连接到API")
+                
         except ImportError as e:
             logger.error(f"DashScope库未安装或导入失败: {e}")
-            raise ImportError("请安装dashscope库：pip install dashscope")
+            logger.error("请运行: pip install dashscope>=1.20.11")
+            self.is_available = False
         except Exception as e:
             logger.error(f"DashScope初始化失败: {e}")
-            raise
+            self.is_available = False
+    
+    def _test_connection(self) -> bool:
+        """
+        测试DashScope连接
+        
+        Returns:
+            bool: 是否成功连接到API
+        """
+        try:
+            # 进行一个简单的测试调用
+            response = self.Application.call(
+                api_key=self.api_key,
+                app_id=self.app_id,
+                prompt='测试'
+            )
+            
+            # 如果没有401错误，则认为连接成功
+            return response.status_code != 401
+            
+        except Exception as e:
+            logger.debug(f"连接测试失败: {e}")
+            return False
     
     async def translate_text(self, 
                            text: str, 
@@ -66,24 +102,29 @@ class DashScopeTranslationService:
         Returns:
             Dict[str, Any]: 包含翻译结果和相关信息的字典
         """
+        if not self.is_available:
+            return {
+                "success": False,
+                "error": "DashScope服务不可用",
+                "translation": None
+            }
+        
         try:
             # 构建专业的海关翻译提示词
             prompt = self._build_translation_prompt(text, source_lang, target_lang, context)
             
-            logger.info(f"开始翻译: {text[:50]}...")
+            logger.info(f"开始DashScope翻译: {text[:50]}...")
             
             # 使用正确的DashScope API调用方式
-            response = self.Generation.call(
-                model=self.app_id,  # 使用自定义模型ID
-                prompt=prompt,
-                top_p=0.8,
-                temperature=0.3,
-                max_tokens=2000
+            response = self.Application.call(
+                api_key=self.api_key,
+                app_id=self.app_id,
+                prompt=prompt
             )
             
             # 检查API响应状态
-            if response.status_code != 200:
-                error_msg = f"API调用失败: {response.status_code} - {response.message}"
+            if response.status_code != self.HTTPStatus.OK:
+                error_msg = f"API调用失败: {response.status_code} - {getattr(response, 'message', '未知错误')}"
                 logger.error(error_msg)
                 return {
                     "success": False,
@@ -94,12 +135,15 @@ class DashScopeTranslationService:
             # 提取翻译结果
             if hasattr(response, 'output') and hasattr(response.output, 'text'):
                 translation_result = response.output.text.strip()
-            elif hasattr(response, 'output') and hasattr(response.output, 'choices'):
-                translation_result = response.output.choices[0].message.content.strip()
             else:
-                translation_result = str(response.output).strip()
+                logger.error(f"无法提取翻译结果，响应结构异常")
+                return {
+                    "success": False,
+                    "error": "无法提取翻译结果",
+                    "translation": None
+                }
             
-            logger.info(f"翻译完成: {translation_result[:50]}...")
+            logger.info(f"DashScope翻译完成: {translation_result[:50]}...")
             
             return {
                 "success": True,
@@ -107,11 +151,12 @@ class DashScopeTranslationService:
                 "source_text": text,
                 "source_lang": source_lang,
                 "target_lang": target_lang,
-                "session_id": getattr(response, 'request_id', None)
+                "session_id": getattr(response, 'request_id', None),
+                "model_used": self.model_name
             }
             
         except Exception as e:
-            error_msg = f"翻译过程中发生错误: {str(e)}"
+            error_msg = f"DashScope翻译过程中发生错误: {str(e)}"
             logger.error(error_msg)
             return {
                 "success": False,
@@ -201,15 +246,19 @@ class DashScopeTranslationService:
         source_lang_name = lang_map.get(source_lang, source_lang)
         target_lang_name = lang_map.get(target_lang, target_lang)
         
-        # 构建基础提示词
-        prompt = f"""作为专业的海关术语翻译专家，请将以下{source_lang_name}内容准确翻译成{target_lang_name}。
+        # 构建专业的海关翻译提示词
+        prompt = f"""你是一位专业的海关行业翻译专家，精通海关术语、国际贸易法规和相关专业词汇。
+
+请将以下{source_lang_name}内容准确翻译成{target_lang_name}：
+
+原文：{text}
 
 翻译要求：
-1. 保持海关专业术语的准确性和一致性
-2. 遵循国际海关组织的标准术语规范
-3. 保持原文的结构和格式
-4. 对于HS编码、法规条款等特殊内容保持原样
-5. 确保翻译结果专业、准确、易懂
+1. 准确使用海关和国际贸易领域的专业术语
+2. 保持原文的专业性和准确性
+3. 遵循目标语言的行业规范和习惯表达
+4. 如果是专有名词或缩写，请保留原文并在括号中提供翻译
+5. 直接输出翻译结果，不需要额外说明
 
 """
         
@@ -217,8 +266,7 @@ class DashScopeTranslationService:
         if context:
             prompt += f"参考信息：\n{context}\n\n"
         
-        # 添加待翻译文本
-        prompt += f"待翻译内容：\n{text}\n\n请提供准确的翻译结果："
+        prompt += "翻译结果："
         
         return prompt
 
