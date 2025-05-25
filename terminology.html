@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WVC海关行业大模型 - 术语翻译</title>
+    <title>WVC海关行业大模型 - 关务翻译</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="styles/common.css">
@@ -55,55 +55,14 @@
                 0 0 0 1px rgba(255, 255, 255, 0.1);
         }
         
-        /* 美化语言选择区域 */
-        .language-selector {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border-radius: 20px;
-            padding: 24px;
-            margin-bottom: 24px;
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .language-selector::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
-            animation: float 6s ease-in-out infinite;
-            pointer-events: none;
-        }
-        
-        .language-switch-btn {
-            background: rgba(255, 255, 255, 0.2);
-            border: 2px solid rgba(255, 255, 255, 0.3);
-            border-radius: 50%;
-            width: 48px;
-            height: 48px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            color: white;
-            backdrop-filter: blur(10px);
-        }
-        
-        .language-switch-btn:hover {
-            background: rgba(255, 255, 255, 0.3);
-            transform: rotate(180deg) scale(1.1);
-            box-shadow: 0 8px 25px rgba(255, 255, 255, 0.2);
-        }
-        
-        /* 优化聊天区域 */
+        /* 美化聊天区域 */
         .chat-container {
             background: rgba(255, 255, 255, 0.7);
             border-radius: 20px;
             border: none;
-            min-height: 400px;
+            min-height: 200px;
+            max-height: 300px;
+            height: 300px;
             position: relative;
         }
         
@@ -146,10 +105,12 @@
             border: 2px solid rgba(102, 126, 234, 0.1);
             border-radius: 16px;
             padding: 16px 20px;
-            font-size: 15px;
+            font-size: 18px;
             transition: all 0.3s ease;
             background: rgba(255, 255, 255, 0.8);
             backdrop-filter: blur(10px);
+            min-height: 80px;
+            height: 100px;
         }
         
         .message-input:focus {
@@ -278,11 +239,6 @@
             .modern-card {
                 border-radius: 16px;
                 margin: 12px;
-            }
-            
-            .language-selector {
-                border-radius: 16px;
-                padding: 20px;
             }
             
             .content-area {
@@ -514,7 +470,7 @@
         <button class="mobile-menu-button" aria-label="打开菜单">
             <i class="fas fa-bars"></i>
         </button>
-        <h1 class="text-white text-lg font-semibold">术语翻译</h1>
+        <h1 class="text-white text-lg font-semibold">关务翻译</h1>
         <div class="w-10"></div>
     </header>
 
@@ -526,15 +482,16 @@
         <!-- 简化的标题区域 -->
         <div class="sidebar-header">
             <h1 class="sidebar-title">
+                <img src="logo.png" alt="logo" style="height:32px; width:auto; display:inline-block; vertical-align:middle; margin-right:8px;" />
                 <a href="index.html" class="text-white hover:text-blue-200 transition-colors">
-                    WVC海关行业大模型
+                    C-Lingo
                 </a>
             </h1>
         </div>
         
         <!-- 简化的副标题区域 -->
         <div class="sidebar-subtitle">
-            <p>专业海关术语翻译与咨询服务</p>
+            <p>专业海关关务翻译与咨询服务</p>
         </div>
         
         <nav class="flex-1">
@@ -542,7 +499,7 @@
                 <li>
                     <a href="terminology.html" class="nav-item flex items-center space-x-3 p-3 bg-blue-700 text-white active">
                         <i class="fas fa-language text-lg w-5 text-center"></i>
-                        <span>术语翻译</span>
+                        <span>关务翻译</span>
                     </a>
                 </li>
                 <li>
@@ -580,46 +537,9 @@
             <div class="max-w-4xl mx-auto">
                 <h2 class="text-3xl font-bold text-gray-800 mb-8 text-center fade-in">
                     <i class="fas fa-language text-indigo-600 mr-3"></i>
-                    专业海关术语翻译
+                    关务翻译
                 </h2>
 
-                <!-- 美化后的语言选择区域 -->
-                <div class="language-selector fade-in">
-                    <div class="flex flex-col md:flex-row items-center justify-between relative z-10">
-                        <div class="w-full md:w-2/5 mb-4 md:mb-0">
-                            <label for="sourceLang" class="block text-sm font-medium text-white mb-2 opacity-90">源语言</label>
-                            <select id="sourceLang" class="modern-select w-full">
-                                <option value="zh">中文</option>
-                                <option value="en" selected>英文</option>
-                                <option value="ja">日文</option>
-                                <option value="ko">韩文</option>
-                                <option value="fr">法文</option>
-                                <option value="de">德文</option>
-                                <option value="es">西班牙文</option>
-                                <option value="ru">俄文</option>
-                            </select>
-                        </div>
-                        
-                        <button id="langSwitchBtn" class="language-switch-btn">
-                            <i class="fas fa-exchange-alt text-lg"></i>
-                        </button>
-                        
-                        <div class="w-full md:w-2/5 mt-4 md:mt-0">
-                            <label for="targetLang" class="block text-sm font-medium text-white mb-2 opacity-90">目标语言</label>
-                            <select id="targetLang" class="modern-select w-full">
-                                <option value="en">英文</option>
-                                <option value="zh" selected>中文</option>
-                                <option value="ja">日文</option>
-                                <option value="ko">韩文</option>
-                                <option value="fr">法文</option>
-                                <option value="de">德文</option>
-                                <option value="es">西班牙文</option>
-                                <option value="ru">俄文</option>
-                            </select>
-                        </div>
-                    </div>
-                </div>
-                
                 <!-- 美化后的聊天消息展示区 -->
                 <div class="modern-card p-6 mb-6 fade-in">
                     <div class="chat-container overflow-y-auto">
@@ -627,15 +547,15 @@
                             <!-- AI欢迎消息 -->
                             <div class="flex items-start space-x-4">
                                 <div class="ai-avatar">
-                                    <i class="fas fa-robot text-lg"></i>
+                                    <img src="logo.png" alt="logo" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover; background: white;" />
                                 </div>
                                 <div class="flex-1 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl p-6 shadow-sm">
                                     <div class="flex items-center mb-3">
-                                        <span class="text-sm font-medium text-indigo-600">海关翻译助手</span>
+                                        <span class="text-sm font-medium text-indigo-600">关务翻译助手</span>
                                         <span class="ml-2 px-2 py-1 bg-indigo-100 text-indigo-700 text-xs rounded-full">在线</span>
                                     </div>
                                     <p class="text-gray-700 leading-relaxed mb-3">
-                                        您好！我是海关术语翻译助手。请输入需要翻译的海关术语或文档，我会为您提供准确的多语言翻译。
+                                        您好！我叫C-Lingo, 是关务翻译的小助手。请输入需要翻译的关务文本或文档，我可以为您提供准确、专业的海关领域多语言翻译。我还能为您提供海关领域专业术语解释和翻译。来试试吧！
                                     </p>
                                     <div class="bg-white rounded-lg p-3 border-l-4 border-indigo-400">
                                         <p class="text-gray-600 text-sm">
@@ -658,8 +578,8 @@
                                     <textarea 
                                         id="messageInput"
                                         class="message-input w-full"
-                                        rows="3"
-                                        placeholder="请输入需要翻译的海关术语或文档内容..."
+                                        rows="5"
+                                        placeholder="请输入需要翻译的关务文本或文档内容..."
                                     ></textarea>
                                 </div>
                                 <button 
@@ -710,25 +630,6 @@
                 overlay.classList.remove('active');
             });
 
-            // 语言切换功能 - 确保功能正常工作
-            const langSwitchBtn = document.getElementById('langSwitchBtn');
-            const sourceLang = document.getElementById('sourceLang');
-            const targetLang = document.getElementById('targetLang');
-
-            console.log('语言切换元素:', { langSwitchBtn, sourceLang, targetLang }); // 调试信息
-
-            if (langSwitchBtn && sourceLang && targetLang) {
-                langSwitchBtn.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    const sourceValue = sourceLang.value;
-                    const targetValue = targetLang.value;
-                    sourceLang.value = targetValue;
-                    targetLang.value = sourceValue;
-                });
-            } else {
-                console.error('语言切换元素未找到:', { langSwitchBtn, sourceLang, targetLang });
-            }
-
             // 翻译功能
             const sendButton = document.getElementById('sendButton');
             const messageInput = document.getElementById('messageInput');
@@ -748,9 +649,13 @@
                 const message = messageInput.value.trim();
                 if (!message) return;
 
-                // 修复默认语言设置，与HTML选择框保持一致
-                const sourceValue = sourceLang?.value || 'en';  // 默认英文
-                const targetValue = targetLang?.value || 'zh';  // 默认中文
+                // 自动判断输入内容是中文还是英文，实现中英文互换
+                let sourceValue = 'en';
+                let targetValue = 'zh';
+                if (/[\u4e00-\u9fa5]/.test(message)) {
+                    sourceValue = 'zh';
+                    targetValue = 'en';
+                }
 
                 console.log(`发送翻译请求: ${sourceValue} → ${targetValue}`);  // 调试信息
 
@@ -821,11 +726,11 @@
                 } else if (type === 'ai') {
                     messageDiv.innerHTML = `
                         <div class="ai-avatar">
-                            <i class="fas fa-robot text-lg"></i>
+                            <img src="logo.png" alt="logo" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover; background: white;" />
                         </div>
                         <div class="flex-1 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl p-6 shadow-sm">
                             <div class="flex items-center mb-3">
-                                <span class="text-sm font-medium text-indigo-600">海关翻译助手</span>
+                                <span class="text-sm font-medium text-indigo-600">关务翻译助手</span>
                                 <span class="ml-2 px-2 py-1 bg-indigo-100 text-indigo-700 text-xs rounded-full">翻译完成</span>
                             </div>
                             <p class="text-gray-700 leading-relaxed">${content}</p>

@@ -12,6 +12,7 @@ from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse, FileResponse
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
+import re
 
 # 配置日志
 logging.basicConfig(level=logging.INFO)
@@ -41,8 +42,8 @@ app.add_middleware(
 class QueryRequest(BaseModel):
     type: str = "terminology"
     message: str
-    sourceLang: Optional[str] = "zh"
-    targetLang: Optional[str] = "en"
+    sourceLang: Optional[str] = "eh"
+    targetLang: Optional[str] = "zn"
 
 async def dashscope_translate(text: str, source_lang: str, target_lang: str) -> dict:
     """使用DashScope进行专业翻译"""
@@ -153,16 +154,18 @@ async def enhanced_translate(text: str, source_lang: str, target_lang: str) -> d
     # 处理英文到中文的翻译
     elif source_lang == "en" and target_lang == "zh":
         text_lower = text.lower().strip()
-        
-        # 首先尝试完整匹配
+        translated_text = text  # 保持原始格式，后续做替换
+        # 首先尝试完整匹配（忽略大小写）
         if text_lower in en_to_zh_dict:
             translated_text = en_to_zh_dict[text_lower]
             exact_match_found = True
         else:
-            # 部分匹配
+            # 部分匹配，忽略大小写，逐个单词替换
             for en_word, zh_word in en_to_zh_dict.items():
-                if en_word in text_lower:
-                    translated_text = translated_text.replace(en_word, zh_word)
+                # 构造正则，忽略大小写，整词匹配
+                pattern = re.compile(re.escape(en_word), re.IGNORECASE)
+                if re.search(pattern, translated_text):
+                    translated_text = pattern.sub(zh_word, translated_text)
                     exact_match_found = True
     
     # 构建说明信息
