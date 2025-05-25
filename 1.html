@@ -61,7 +61,7 @@
             border-radius: 20px;
             border: none;
             min-height: 400px;
-            height: 70vh; /* 增大可视区域 */
+            height: 65vh; /* 增大可视区域 */
             max-height: 80vh;
             overflow-y: auto;
             padding-top: 0; /* 如有需要可去掉多余内边距 */
@@ -72,7 +72,7 @@
                 top: 0;
                 left: 0;
                 width: 100%;
-                height: 40px; /* 这里就是遮罩的高度，改小即可 */
+                height: 16px; /* 这里就是遮罩的高度，改小即可 */
                 background: linear-gradient(to bottom, #fff, rgba(255,255,255,0));
                 pointer-events: none;
                 z-index: 2;
@@ -546,8 +546,8 @@
     
     <!-- 右侧主要内容区 -->
     <div class="content-area flex-1 flex flex-col overflow-hidden">
-        <div class="flex-1 overflow-y-auto p-8">
-            <div class="max-w-6xl mx-auto">
+         <div class="flex-1 overflow-y-auto p-8">
+            <div class="max-w-6xl  mx-auto">
                 <h2 class="text-3xl font-bold text-gray-800 mb-8 text-center fade-in">
                     <i class="fas fa-language text-indigo-600 mr-3"></i>
                     关务翻译
@@ -730,8 +730,9 @@
 
                 if (type === 'user') {
                     messageDiv.innerHTML = `
-                        <div class="flex-1 flex justify-start">
-                            <div class="bg-blue-600 text-white rounded-2xl p-6 flex-1">
+                        <div class="flex-1 flex">
+                            <div style="width:40px;min-width:40px;"></div> <!-- 占位头像宽度 -->
+                            <div class="bg-blue-600 text-white rounded-2xl pt-2 pr-6 pb-4 pl-6 flex-1 ml-4">
                                 <p class="leading-relaxed">${content}</p>
                             </div>
                         </div>
@@ -770,13 +771,7 @@
                 }
 
                 chatMessages.appendChild(messageDiv);
-                
-                // 改进的滚动实现
-                const scrollOptions = {
-                    behavior: 'smooth',
-                    block: 'end'
-                };
-                messageDiv.scrollIntoView(scrollOptions);
+                chatMessages.scrollTop = chatMessages.scrollHeight;
                 
                 return messageDiv;
             }
@@ -836,3 +831,4 @@
     </script>
 </body>
 </html>
+
