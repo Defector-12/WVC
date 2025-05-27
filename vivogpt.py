@@ -9,7 +9,7 @@ WVC海关行业大模型翻译服务 - 工作版本
 import logging
 from typing import Optional
 from fastapi import FastAPI, Request
-from fastapi.responses import JSONResponse, FileResponse
+from fastapi.responses import JSONResponse, FileResponse, Response
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 import re
@@ -44,6 +44,19 @@ class QueryRequest(BaseModel):
     message: str
     sourceLang: Optional[str] = "eh"
     targetLang: Optional[str] = "zn"
+
+class ChatRequest(BaseModel):
+    message: str
+    session_id: Optional[str] = None
+    context: Optional[str] = None
+
+class ExplainRequest(BaseModel):
+    term: str
+    context: Optional[str] = None
+
+class KnowledgeRequest(BaseModel):
+    query: str
+    pipeline_ids: Optional[list] = None
 
 async def dashscope_translate(text: str, source_lang: str, target_lang: str) -> dict:
     """使用DashScope进行专业翻译"""
@@ -263,6 +276,209 @@ async def query_endpoint(request: Request):
             }
         )
 
+@app.post("/api/chat")
+async def chat_endpoint(request: ChatRequest):
+    """对话端点 - 支持单轮和多轮对话"""
+    try:
+        logger.info(f"=== 对话请求详情 ===")
+        logger.info(f"消息: '{request.message}'")
+        logger.info(f"会话ID: {request.session_id}")
+        logger.info(f"DashScope可用: {DASHSCOPE_AVAILABLE}")
+        
+        if not request.message.strip():
+            return JSONResponse(
+                status_code=400,
+                content={
+                    "code": -1,
+                    "message": "对话内容不能为空"
+                }
+            )
+        
+        if not DASHSCOPE_AVAILABLE:
+            return JSONResponse(
+                status_code=503,
+                content={
+                    "code": -1,
+                    "message": "DashScope服务不可用，无法进行对话"
+                }
+            )
+        
+        # 根据是否有session_id决定单轮还是多轮对话
+        if request.session_id:
+            # 多轮对话
+            result = await translation_service.chat_multi_turn(
+                prompt=request.message,
+                session_id=request.session_id,
+                context=request.context
+            )
+        else:
+            # 单轮对话
+            result = await translation_service.chat_single_turn(
+                prompt=request.message,
+                context=request.context
+            )
+        
+        if result.get('success'):
+            response_data = {
+                "code": 0,
+                "message": "success",
+                "data": {
+                    "content": result.get('response', ''),
+                    "session_id": result.get('session_id'),
+                    "model_used": result.get('model_used', 'DashScope-Customs')
+                }
+            }
+            logger.info(f"=== 对话完成 ===")
+            logger.info(f"回答: {response_data['data']['content'][:50]}...")
+            logger.info(f"会话ID: {response_data['data']['session_id']}")
+            return response_data
+        else:
+            return JSONResponse(
+                status_code=500,
+                content={
+                    "code": -1,
+                    "message": result.get('error', '对话失败')
+                }
+            )
+        
+    except Exception as e:
+        logger.error(f"Chat endpoint error: {e}", exc_info=True)
+        return JSONResponse(
+            status_code=500,
+            content={
+                "code": -1,
+                "message": f"服务器内部错误: {str(e)}"
+            }
+        )
+
+@app.post("/api/explain")
+async def explain_endpoint(request: ExplainRequest):
+    """专业名词解释端点"""
+    try:
+        logger.info(f"=== 专业名词解释请求 ===")
+        logger.info(f"名词: '{request.term}'")
+        logger.info(f"DashScope可用: {DASHSCOPE_AVAILABLE}")
+        
+        if not request.term.strip():
+            return JSONResponse(
+                status_code=400,
+                content={
+                    "code": -1,
+                    "message": "专业名词不能为空"
+                }
+            )
+        
+        if not DASHSCOPE_AVAILABLE:
+            return JSONResponse(
+                status_code=503,
+                content={
+                    "code": -1,
+                    "message": "DashScope服务不可用，无法进行专业名词解释"
+                }
+            )
+        
+        result = await translation_service.explain_terminology(
+            term=request.term,
+            context=request.context
+        )
+        
+        if result.get('success'):
+            response_data = {
+                "code": 0,
+                "message": "success",
+                "data": {
+                    "content": result.get('explanation', ''),
+                    "term": result.get('term', ''),
+                    "model_used": result.get('model_used', 'DashScope-Customs')
+                }
+            }
+            logger.info(f"=== 专业名词解释完成 ===")
+            logger.info(f"解释: {response_data['data']['content'][:50]}...")
+            return response_data
+        else:
+            return JSONResponse(
+                status_code=500,
+                content={
+                    "code": -1,
+                    "message": result.get('error', '专业名词解释失败')
+                }
+            )
+        
+    except Exception as e:
+        logger.error(f"Explain endpoint error: {e}", exc_info=True)
+        return JSONResponse(
+            status_code=500,
+            content={
+                "code": -1,
+                "message": f"服务器内部错误: {str(e)}"
+            }
+        )
+
+@app.post("/api/knowledge")
+async def knowledge_endpoint(request: KnowledgeRequest):
+    """知识库检索端点"""
+    try:
+        logger.info(f"=== 知识库检索请求 ===")
+        logger.info(f"查询: '{request.query}'")
+        logger.info(f"知识库ID: {request.pipeline_ids}")
+        logger.info(f"DashScope可用: {DASHSCOPE_AVAILABLE}")
+        
+        if not request.query.strip():
+            return JSONResponse(
+                status_code=400,
+                content={
+                    "code": -1,
+                    "message": "查询内容不能为空"
+                }
+            )
+        
+        if not DASHSCOPE_AVAILABLE:
+            return JSONResponse(
+                status_code=503,
+                content={
+                    "code": -1,
+                    "message": "DashScope服务不可用，无法进行知识库检索"
+                }
+            )
+        
+        result = await translation_service.query_knowledge_base(
+            query=request.query,
+            pipeline_ids=request.pipeline_ids
+        )
+        
+        if result.get('success'):
+            response_data = {
+                "code": 0,
+                "message": "success",
+                "data": {
+                    "content": result.get('response', ''),
+                    "query": result.get('query', ''),
+                    "pipeline_ids": result.get('pipeline_ids'),
+                    "model_used": result.get('model_used', 'DashScope-Customs')
+                }
+            }
+            logger.info(f"=== 知识库检索完成 ===")
+            logger.info(f"结果: {response_data['data']['content'][:50]}...")
+            return response_data
+        else:
+            return JSONResponse(
+                status_code=500,
+                content={
+                    "code": -1,
+                    "message": result.get('error', '知识库检索失败')
+                }
+            )
+        
+    except Exception as e:
+        logger.error(f"Knowledge endpoint error: {e}", exc_info=True)
+        return JSONResponse(
+            status_code=500,
+            content={
+                "code": -1,
+                "message": f"服务器内部错误: {str(e)}"
+            }
+        )
+
 @app.get("/api/test")
 async def test_endpoint():
     """测试端点"""
@@ -280,7 +496,14 @@ async def read_root():
 @app.get("/{path:path}")
 async def serve_static(path: str):
     """服务静态文件"""
+    import os
     try:
+        # 特殊处理favicon.ico
+        if path == 'favicon.ico':
+            # 如果favicon.ico不存在，返回204 No Content
+            if not os.path.exists(path):
+                return Response(status_code=204)
+        
         if path.endswith('.html'):
             return FileResponse(path)
         elif path.endswith('.js'):

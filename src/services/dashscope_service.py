@@ -214,6 +214,282 @@ class DashScopeTranslationService:
         
         return results
     
+    async def chat_single_turn(self, prompt: str, context: Optional[str] = None) -> Dict[str, Any]:
+        """
+        单轮对话
+        
+        Args:
+            prompt (str): 用户输入的问题
+            context (str, optional): 额外的上下文信息
+            
+        Returns:
+            Dict[str, Any]: 包含回答结果和相关信息的字典
+        """
+        if not self.is_available:
+            return {
+                "success": False,
+                "error": "DashScope服务不可用",
+                "response": None
+            }
+        
+        try:
+            # 构建海关专业对话提示词
+            chat_prompt = self._build_chat_prompt(prompt, context)
+            
+            logger.info(f"开始DashScope单轮对话: {prompt[:50]}...")
+            
+            response = self.Application.call(
+                api_key=self.api_key,
+                app_id=self.app_id,
+                prompt=chat_prompt
+            )
+            
+            if response.status_code != self.HTTPStatus.OK:
+                error_msg = f"API调用失败: {response.status_code} - {getattr(response, 'message', '未知错误')}"
+                logger.error(error_msg)
+                return {
+                    "success": False,
+                    "error": error_msg,
+                    "response": None
+                }
+            
+            if hasattr(response, 'output') and hasattr(response.output, 'text'):
+                chat_result = response.output.text.strip()
+                session_id = getattr(response.output, 'session_id', None)
+            else:
+                logger.error("无法提取对话结果，响应结构异常")
+                return {
+                    "success": False,
+                    "error": "无法提取对话结果",
+                    "response": None
+                }
+            
+            logger.info(f"DashScope单轮对话完成: {chat_result[:50]}...")
+            
+            return {
+                "success": True,
+                "response": chat_result,
+                "session_id": session_id,
+                "model_used": self.model_name
+            }
+            
+        except Exception as e:
+            error_msg = f"DashScope单轮对话过程中发生错误: {str(e)}"
+            logger.error(error_msg)
+            return {
+                "success": False,
+                "error": error_msg,
+                "response": None
+            }
+    
+    async def chat_multi_turn(self, prompt: str, session_id: str, context: Optional[str] = None) -> Dict[str, Any]:
+        """
+        多轮对话
+        
+        Args:
+            prompt (str): 用户输入的问题
+            session_id (str): 会话ID，用于维持对话上下文
+            context (str, optional): 额外的上下文信息
+            
+        Returns:
+            Dict[str, Any]: 包含回答结果和相关信息的字典
+        """
+        if not self.is_available:
+            return {
+                "success": False,
+                "error": "DashScope服务不可用",
+                "response": None
+            }
+        
+        try:
+            # 构建海关专业对话提示词
+            chat_prompt = self._build_chat_prompt(prompt, context)
+            
+            logger.info(f"开始DashScope多轮对话: {prompt[:50]}... (session: {session_id})")
+            
+            response = self.Application.call(
+                api_key=self.api_key,
+                app_id=self.app_id,
+                prompt=chat_prompt,
+                session_id=session_id
+            )
+            
+            if response.status_code != self.HTTPStatus.OK:
+                error_msg = f"API调用失败: {response.status_code} - {getattr(response, 'message', '未知错误')}"
+                logger.error(error_msg)
+                return {
+                    "success": False,
+                    "error": error_msg,
+                    "response": None
+                }
+            
+            if hasattr(response, 'output') and hasattr(response.output, 'text'):
+                chat_result = response.output.text.strip()
+                new_session_id = getattr(response.output, 'session_id', session_id)
+            else:
+                logger.error("无法提取对话结果，响应结构异常")
+                return {
+                    "success": False,
+                    "error": "无法提取对话结果",
+                    "response": None
+                }
+            
+            logger.info(f"DashScope多轮对话完成: {chat_result[:50]}...")
+            
+            return {
+                "success": True,
+                "response": chat_result,
+                "session_id": new_session_id,
+                "model_used": self.model_name
+            }
+            
+        except Exception as e:
+            error_msg = f"DashScope多轮对话过程中发生错误: {str(e)}"
+            logger.error(error_msg)
+            return {
+                "success": False,
+                "error": error_msg,
+                "response": None
+            }
+    
+    async def explain_terminology(self, term: str, context: Optional[str] = None) -> Dict[str, Any]:
+        """
+        专业名词解释
+        
+        Args:
+            term (str): 需要解释的专业名词
+            context (str, optional): 额外的上下文信息
+            
+        Returns:
+            Dict[str, Any]: 包含解释结果的字典
+        """
+        if not self.is_available:
+            return {
+                "success": False,
+                "error": "DashScope服务不可用",
+                "explanation": None
+            }
+        
+        try:
+            # 构建专业名词解释提示词
+            explanation_prompt = self._build_explanation_prompt(term, context)
+            
+            logger.info(f"开始DashScope专业名词解释: {term}")
+            
+            response = self.Application.call(
+                api_key=self.api_key,
+                app_id=self.app_id,
+                prompt=explanation_prompt
+            )
+            
+            if response.status_code != self.HTTPStatus.OK:
+                error_msg = f"API调用失败: {response.status_code} - {getattr(response, 'message', '未知错误')}"
+                logger.error(error_msg)
+                return {
+                    "success": False,
+                    "error": error_msg,
+                    "explanation": None
+                }
+            
+            if hasattr(response, 'output') and hasattr(response.output, 'text'):
+                explanation_result = response.output.text.strip()
+            else:
+                logger.error("无法提取解释结果，响应结构异常")
+                return {
+                    "success": False,
+                    "error": "无法提取解释结果",
+                    "explanation": None
+                }
+            
+            logger.info(f"DashScope专业名词解释完成: {explanation_result[:50]}...")
+            
+            return {
+                "success": True,
+                "explanation": explanation_result,
+                "term": term,
+                "model_used": self.model_name
+            }
+            
+        except Exception as e:
+            error_msg = f"DashScope专业名词解释过程中发生错误: {str(e)}"
+            logger.error(error_msg)
+            return {
+                "success": False,
+                "error": error_msg,
+                "explanation": None
+            }
+    
+    async def query_knowledge_base(self, query: str, pipeline_ids: Optional[list] = None) -> Dict[str, Any]:
+        """
+        检索知识库
+        
+        Args:
+            query (str): 查询问题
+            pipeline_ids (list, optional): 知识库ID列表
+            
+        Returns:
+            Dict[str, Any]: 包含检索结果的字典
+        """
+        if not self.is_available:
+            return {
+                "success": False,
+                "error": "DashScope服务不可用",
+                "response": None
+            }
+        
+        try:
+            logger.info(f"开始DashScope知识库检索: {query[:50]}...")
+            
+            # 构建知识库检索参数
+            rag_options = {}
+            if pipeline_ids:
+                rag_options["pipeline_ids"] = pipeline_ids
+            
+            response = self.Application.call(
+                api_key=self.api_key,
+                app_id=self.app_id,
+                prompt=query,
+                rag_options=rag_options if rag_options else None
+            )
+            
+            if response.status_code != self.HTTPStatus.OK:
+                error_msg = f"API调用失败: {response.status_code} - {getattr(response, 'message', '未知错误')}"
+                logger.error(error_msg)
+                return {
+                    "success": False,
+                    "error": error_msg,
+                    "response": None
+                }
+            
+            if hasattr(response, 'output') and hasattr(response.output, 'text'):
+                knowledge_result = response.output.text.strip()
+            else:
+                logger.error("无法提取知识库检索结果，响应结构异常")
+                return {
+                    "success": False,
+                    "error": "无法提取知识库检索结果",
+                    "response": None
+                }
+            
+            logger.info(f"DashScope知识库检索完成: {knowledge_result[:50]}...")
+            
+            return {
+                "success": True,
+                "response": knowledge_result,
+                "query": query,
+                "pipeline_ids": pipeline_ids,
+                "model_used": self.model_name
+            }
+            
+        except Exception as e:
+            error_msg = f"DashScope知识库检索过程中发生错误: {str(e)}"
+            logger.error(error_msg)
+            return {
+                "success": False,
+                "error": error_msg,
+                "response": None
+            }
+    
     def _build_translation_prompt(self, 
                                 text: str, 
                                 source_lang: str, 
@@ -269,6 +545,70 @@ class DashScopeTranslationService:
         prompt += "翻译结果："
         
         return prompt
+    
+    def _build_chat_prompt(self, prompt: str, context: Optional[str] = None) -> str:
+        """
+        构建海关专业对话提示词
+        
+        Args:
+            prompt (str): 用户问题
+            context (str, optional): 额外上下文
+            
+        Returns:
+            str: 构建好的对话提示词
+        """
+        chat_prompt = f"""你是一位专业的海关业务专家，精通海关法规、国际贸易、商品归类、关税政策等领域知识。
+
+用户问题：{prompt}
+
+请根据以下要求回答：
+1. 提供准确、专业的海关业务解答
+2. 如涉及法规条文，请引用具体条款
+3. 如涉及操作流程，请提供详细步骤
+4. 语言简洁明了，便于理解
+5. 如果问题超出海关业务范围，请礼貌说明并引导到相关话题
+
+"""
+        
+        # 添加额外上下文
+        if context:
+            chat_prompt += f"参考信息：\n{context}\n\n"
+        
+        chat_prompt += "专业解答："
+        
+        return chat_prompt
+    
+    def _build_explanation_prompt(self, term: str, context: Optional[str] = None) -> str:
+        """
+        构建专业名词解释提示词
+        
+        Args:
+            term (str): 需要解释的专业名词
+            context (str, optional): 额外上下文
+            
+        Returns:
+            str: 构建好的解释提示词
+        """
+        explanation_prompt = f"""你是一位海关业务专家，请对以下海关或国际贸易专业名词进行详细解释。
+
+专业名词：{term}
+
+请按以下格式提供解释：
+1. 定义：简明扼要的定义
+2. 适用范围：该名词的使用场景和适用范围
+3. 相关法规：涉及的主要法律法规（如有）
+4. 实际应用：在海关业务中的具体应用
+5. 注意事项：需要特别注意的要点（如有）
+
+"""
+        
+        # 添加额外上下文
+        if context:
+            explanation_prompt += f"参考信息：\n{context}\n\n"
+        
+        explanation_prompt += "详细解释："
+        
+        return explanation_prompt
 
 # 尝试创建全局服务实例
 try:

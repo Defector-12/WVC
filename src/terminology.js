@@ -18,6 +18,9 @@ class TerminologyHandler extends ChatHandler {
         // 设置语言切换按钮
         this.langSwitchBtn = document.getElementById('langSwitchBtn');
         
+        // 初始化会话ID（用于多轮对话）
+        this.sessionId = null;
+        
         // 添加额外的事件监听器
         this.setupTranslationListeners();
     }
@@ -75,9 +78,8 @@ class TerminologyHandler extends ChatHandler {
             this.addMessage(message, 'user');
         }
         
-        // 获取语言选择
-        const sourceLang = this.sourceLangSelect ? this.sourceLangSelect.value : 'en';
-        const targetLang = this.targetLangSelect ? this.targetLangSelect.value : 'zh';
+        // 检测消息类型：翻译、对话还是专业名词解释
+        const messageType = this.detectMessageType(message);
         
         // 显示加载状态
         const loadingDiv = document.createElement('div');
@@ -86,31 +88,17 @@ class TerminologyHandler extends ChatHandler {
         this.chatMessages.appendChild(loadingDiv);
         
         try {
-            // 准备请求数据
-            const formData = new FormData();
-            formData.append('type', this.type);
-            if (message) formData.append('message', message);
-            if (this.currentFile) formData.append('file', this.currentFile);
-            
-            // 添加语言参数
-            formData.append('sourceLang', sourceLang);
-            formData.append('targetLang', targetLang);
-            
-            // 发送请求到后端
             let response;
-            try {
-                response = await fetch('/api/query', {
-                    method: 'POST',
-                    body: formData,
-                    headers: {
-                        'Accept': 'application/json',
-                        'X-Requested-With': 'XMLHttpRequest'
-                    },
-                    credentials: 'same-origin',
-                    mode: 'cors'
-                });
-            } catch (networkError) {
-                throw new Error('网络连接错误，请检查网络连接并重试');
+            
+            if (messageType === 'translation') {
+                // 翻译请求
+                response = await this.handleTranslation(message);
+            } else if (messageType === 'explanation') {
+                // 专业名词解释请求
+                response = await this.handleExplanation(message);
+            } else {
+                // 对话请求
+                response = await this.handleChat(message);
             }
             
             // 移除加载状态
@@ -118,30 +106,23 @@ class TerminologyHandler extends ChatHandler {
                 this.chatMessages.removeChild(loadingDiv);
             }
             
-            if (!response.ok) {
-                const errorText = await response.text();
-                throw new Error(`请求失败: ${response.status} ${errorText}`);
-            }
-            
-            let data;
-            try {
-                data = await response.json();
-            } catch (jsonError) {
-                throw new Error('服务器响应格式错误');
-            }
-            
-            // 处理成功响应
-            if (data.code === 0 && data.data && data.data.content) {
-                // 在聊天区域显示翻译结果
-                this.addMessage(data.data.content, 'ai');
+            // 处理响应
+            if (response && response.code === 0 && response.data && response.data.content) {
+                // 在聊天区域显示结果
+                this.addMessage(response.data.content, 'ai');
                 
-                // 如果存在专门的翻译结果区域，也显示结果
-                if (this.translationResult && this.translationText) {
-                    this.translationText.textContent = data.data.content;
-                    if (this.explanationText && data.data.explanation) {
-                        this.explanationText.textContent = data.data.explanation || '无额外解释';
+                // 如果是翻译结果且存在专门的翻译结果区域，也显示结果
+                if (messageType === 'translation' && this.translationResult && this.translationText) {
+                    this.translationText.textContent = response.data.content;
+                    if (this.explanationText && response.data.explanation) {
+                        this.explanationText.textContent = response.data.explanation || '无额外解释';
                     }
                     this.translationResult.classList.remove('hidden');
+                }
+                
+                // 保存会话ID（用于多轮对话）
+                if (response.data.session_id) {
+                    this.sessionId = response.data.session_id;
                 }
                 
                 // 清空输入框
@@ -151,7 +132,7 @@ class TerminologyHandler extends ChatHandler {
                     this.removeUploadedFile();
                 }
             } else {
-                throw new Error(data.message || '无效的响应格式');
+                throw new Error(response?.message || '无效的响应格式');
             }
         } catch (error) {
             console.error('Error:', error);
@@ -163,6 +144,113 @@ class TerminologyHandler extends ChatHandler {
             const errorMessage = error.message || '请求失败，请稍后重试';
             this.addMessage(errorMessage, 'error');
         }
+    }
+    
+    // 检测消息类型
+    detectMessageType(message) {
+        // 检测是否为专业名词解释请求
+        const explanationKeywords = ['什么是', '解释', '定义', '含义', '是什么', '什么意思'];
+        if (explanationKeywords.some(keyword => message.includes(keyword))) {
+            return 'explanation';
+        }
+        
+        // 检测是否为翻译请求（包含明显的翻译意图或不同语言文字）
+        const hasChineseAndEnglish = /[\u4e00-\u9fa5]/.test(message) && /[a-zA-Z]/.test(message);
+        const translationKeywords = ['翻译', '译成', 'translate', '英文', '中文'];
+        if (hasChineseAndEnglish || translationKeywords.some(keyword => message.toLowerCase().includes(keyword.toLowerCase()))) {
+            return 'translation';
+        }
+        
+        // 默认为对话
+        return 'chat';
+    }
+    
+    // 处理翻译请求
+    async handleTranslation(message) {
+        const sourceLang = this.sourceLangSelect ? this.sourceLangSelect.value : 'en';
+        const targetLang = this.targetLangSelect ? this.targetLangSelect.value : 'zh';
+        
+        const requestBody = {
+            type: this.type,
+            message: message,
+            sourceLang: sourceLang,
+            targetLang: targetLang
+        };
+        
+        // 注意：文件上传功能暂时不支持，如需要可以单独处理
+        if (this.currentFile) {
+            console.warn('文件上传功能暂时不支持，将忽略文件');
+        }
+        
+        const response = await fetch('/api/query', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            },
+            body: JSON.stringify(requestBody)
+        });
+        
+        if (!response.ok) {
+            throw new Error(`翻译请求失败: ${response.status}`);
+        }
+        
+        return await response.json();
+    }
+    
+    // 处理专业名词解释请求
+    async handleExplanation(message) {
+        // 提取专业名词（简单的提取逻辑）
+        let term = message;
+        const explanationKeywords = ['什么是', '解释', '定义', '含义', '是什么', '什么意思'];
+        for (const keyword of explanationKeywords) {
+            if (message.includes(keyword)) {
+                term = message.replace(keyword, '').trim();
+                break;
+            }
+        }
+        
+        const response = await fetch('/api/explain', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            },
+            body: JSON.stringify({
+                term: term,
+                context: null
+            })
+        });
+        
+        if (!response.ok) {
+            throw new Error(`专业名词解释请求失败: ${response.status}`);
+        }
+        
+        return await response.json();
+    }
+    
+    // 处理对话请求
+    async handleChat(message) {
+        const requestBody = {
+            message: message,
+            session_id: this.sessionId || null,
+            context: null
+        };
+        
+        const response = await fetch('/api/chat', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            },
+            body: JSON.stringify(requestBody)
+        });
+        
+        if (!response.ok) {
+            throw new Error(`对话请求失败: ${response.status}`);
+        }
+        
+        return await response.json();
     }
     
     // 添加保存到历史记录的方法
