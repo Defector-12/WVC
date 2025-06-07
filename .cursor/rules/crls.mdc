@@ -1,0 +1,13 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+Always respond in Chinese
+When modifying code, please follow the following principles:
+1. Make modifications after fully understanding the project code
+2. Minimize the amount of code modification to ensure that only necessary code is modified;
+3. First, list the steps, clarify the hierarchical relationship between tasks, and then strictly follow them to complete each task one by one;
+4. The code logic is clear and complete, ensuring the quality of modifications before making further changes, and resolutely avoiding the problem of more bugs as more modifications are made;
+
+5. Just modify the code, there is no need to add any modification completion document, modification explanation document, or summary document, unless I explicitly require you to output;

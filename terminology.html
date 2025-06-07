@@ -476,6 +476,40 @@
             box-shadow: none !important;
             border-color: transparent !important;
         }
+        
+        /* 知识库引用样式 */
+        .knowledge-ref {
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+            color: white;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.8em;
+            font-weight: 500;
+            cursor: help;
+            transition: all 0.2s ease;
+        }
+        
+        .knowledge-ref:hover {
+            background: linear-gradient(135deg, #1d4ed8, #1e40af);
+            transform: scale(1.05);
+        }
+        
+        /* 数据集引用样式 */
+        .dataset-ref {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.8em;
+            font-weight: 500;
+            cursor: help;
+            transition: all 0.2s ease;
+        }
+        
+        .dataset-ref:hover {
+            background: linear-gradient(135deg, #059669, #047857);
+            transform: scale(1.05);
+        }
     </style>
 </head>
 <body class="flex h-screen overflow-hidden">
@@ -627,6 +661,9 @@
         </div>
     </div>
     
+    <!-- 引入 marked.js 用于 markdown 解析 -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             // 移动端菜单控制
@@ -645,5 +682,8 @@
             });
         });
     </script>
+    
+    <!-- 引入术语翻译功能 -->
+    <script type="module" src="src/terminology.js"></script>
 </body>
 </html>

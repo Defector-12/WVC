@@ -21,6 +21,10 @@ class TerminologyHandler extends ChatHandler {
         // 初始化会话ID（用于多轮对话）
         this.sessionId = null;
         
+        // 长期记忆相关属性
+        this.currentMemoryId = null;
+        this.memoryEnabled = false;
+        
         // 添加额外的事件监听器
         this.setupTranslationListeners();
     }
@@ -62,6 +66,33 @@ class TerminologyHandler extends ChatHandler {
                     this.translationText.textContent
                 );
                 alert('已保存到翻译历史');
+            });
+        }
+        
+        // 长期记忆开关
+        const memoryToggle = document.getElementById('memoryToggle');
+        if (memoryToggle) {
+            memoryToggle.addEventListener('change', (e) => {
+                this.memoryEnabled = e.target.checked;
+                if (this.memoryEnabled && !this.currentMemoryId) {
+                    this.createMemory();
+                }
+            });
+        }
+        
+        // 创建新记忆体按钮
+        const createMemoryBtn = document.getElementById('createMemoryBtn');
+        if (createMemoryBtn) {
+            createMemoryBtn.addEventListener('click', () => {
+                this.createMemory();
+            });
+        }
+        
+        // 保存当前对话到记忆体按钮
+        const saveToMemoryBtn = document.getElementById('saveToMemoryBtn');
+        if (saveToMemoryBtn) {
+            saveToMemoryBtn.addEventListener('click', () => {
+                this.saveCurrentChatToMemory();
             });
         }
     }
@@ -109,7 +140,8 @@ class TerminologyHandler extends ChatHandler {
             // 处理响应
             if (response && response.code === 0 && response.data && response.data.content) {
                 // 在聊天区域显示结果
-                this.addMessage(response.data.content, 'ai');
+                const cleanContent = this.removeReferenceMarks(response.data.content);
+                this.addMessage(cleanContent, 'ai');
                 
                 // 如果是翻译结果且存在专门的翻译结果区域，也显示结果
                 if (messageType === 'translation' && this.translationResult && this.translationText) {
@@ -148,20 +180,44 @@ class TerminologyHandler extends ChatHandler {
     
     // 检测消息类型
     detectMessageType(message) {
+        // 首先检测是否为明确的对话类型（问候、询问等）
+        const chatKeywords = [
+            '你好', '您好', 'hello', 'hi', '怎么样', '如何', '咋样',
+            '我是', '我叫', '请问', '能否', '可以', '帮我', '帮助',
+            '谢谢', '感谢', '再见', 'bye', '拜拜'
+        ];
+        
+        // 检测简单问候和自我介绍
+        const isGreeting = chatKeywords.some(keyword => 
+            message.toLowerCase().includes(keyword.toLowerCase())
+        );
+        
+        if (isGreeting) {
+            return 'chat';
+        }
+        
         // 检测是否为专业名词解释请求
         const explanationKeywords = ['什么是', '解释', '定义', '含义', '是什么', '什么意思'];
         if (explanationKeywords.some(keyword => message.includes(keyword))) {
             return 'explanation';
         }
         
-        // 检测是否为翻译请求（包含明显的翻译意图或不同语言文字）
-        const hasChineseAndEnglish = /[\u4e00-\u9fa5]/.test(message) && /[a-zA-Z]/.test(message);
-        const translationKeywords = ['翻译', '译成', 'translate', '英文', '中文'];
-        if (hasChineseAndEnglish || translationKeywords.some(keyword => message.toLowerCase().includes(keyword.toLowerCase()))) {
+        // 检测是否为明确的翻译请求
+        const explicitTranslationKeywords = ['翻译', '译成', 'translate', '翻译成', '译为'];
+        if (explicitTranslationKeywords.some(keyword => 
+            message.toLowerCase().includes(keyword.toLowerCase())
+        )) {
             return 'translation';
         }
         
-        // 默认为对话
+        // 检测是否包含明显的翻译意图（同时有中英文且没有对话特征）
+        const hasChineseAndEnglish = /[\u4e00-\u9fa5]/.test(message) && /[a-zA-Z]/.test(message);
+        if (hasChineseAndEnglish && message.length > 10) {
+            // 如果文本较长且同时包含中英文，可能是需要翻译的内容
+            return 'translation';
+        }
+        
+        // 其他情况默认为对话
         return 'chat';
     }
     
@@ -195,7 +251,19 @@ class TerminologyHandler extends ChatHandler {
             throw new Error(`翻译请求失败: ${response.status}`);
         }
         
-        return await response.json();
+        const data = await response.json();
+        
+        // 不再移除引用标记，保留完整的工作流输出
+        const fullContent = data.data.content;
+        
+        return {
+            code: data.code,
+            data: {
+                content: fullContent,  // 使用完整内容
+                explanation: data.data.explanation,
+                session_id: data.data.session_id
+            }
+        };
     }
     
     // 处理专业名词解释请求
@@ -226,11 +294,26 @@ class TerminologyHandler extends ChatHandler {
             throw new Error(`专业名词解释请求失败: ${response.status}`);
         }
         
-        return await response.json();
+        const data = await response.json();
+        // 不再调用removeReferenceMarks方法
+        const fullContent = data.data.content;
+        
+        return {
+            code: data.code,
+            data: {
+                content: fullContent,
+                explanation: data.data.explanation
+            }
+        };
     }
     
     // 处理对话请求
     async handleChat(message) {
+        // 如果启用了长期记忆且有记忆体ID，使用长期记忆对话
+        if (this.memoryEnabled && this.currentMemoryId) {
+            return await this.handleMemoryChat(message);
+        }
+        
         const requestBody = {
             message: message,
             session_id: this.sessionId || null,
@@ -250,7 +333,167 @@ class TerminologyHandler extends ChatHandler {
             throw new Error(`对话请求失败: ${response.status}`);
         }
         
-        return await response.json();
+        const data = await response.json();
+        // 不再移除引用标记
+        const fullContent = data.data.content;
+        
+        return {
+            code: data.code,
+            data: {
+                content: fullContent,
+                session_id: data.data.session_id
+            }
+        };
+    }
+    
+    // 处理长期记忆对话请求
+    async handleMemoryChat(message) {
+        const requestBody = {
+            message: message,
+            memory_id: this.currentMemoryId,
+            context: null
+        };
+        
+        const response = await fetch('/api/memory/chat', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            },
+            body: JSON.stringify(requestBody)
+        });
+        
+        if (!response.ok) {
+            throw new Error(`长期记忆对话请求失败: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        // 不再移除引用标记
+        const fullContent = data.data.content;
+        
+        return {
+            code: data.code,
+            data: {
+                content: fullContent,
+                session_id: data.data.session_id
+            }
+        };
+    }
+    
+    // 创建长期记忆体
+    async createMemory(description = null) {
+        try {
+            const requestBody = {};
+            if (description) {
+                requestBody.description = description;
+            }
+            
+            const response = await fetch('/api/memory/create', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify(requestBody)
+            });
+            
+            if (!response.ok) {
+                throw new Error(`创建记忆体失败: ${response.status}`);
+            }
+            
+            const result = await response.json();
+            
+            if (result.code === 0 && result.data && result.data.memory_id) {
+                this.currentMemoryId = result.data.memory_id;
+                this.memoryEnabled = true;
+                
+                // 更新UI状态
+                const memoryToggle = document.getElementById('memoryToggle');
+                if (memoryToggle) {
+                    memoryToggle.checked = true;
+                }
+                
+                // 显示成功消息
+                this.addMessage(`长期记忆体创建成功！记忆体ID: ${this.currentMemoryId}`, 'system');
+                
+                console.log('长期记忆体创建成功:', this.currentMemoryId);
+            } else {
+                throw new Error(result.message || '创建记忆体失败');
+            }
+        } catch (error) {
+            console.error('创建记忆体失败:', error);
+            this.addMessage(`创建记忆体失败: ${error.message}`, 'error');
+        }
+    }
+    
+    // 保存当前对话到记忆体
+    async saveCurrentChatToMemory() {
+        if (!this.currentMemoryId) {
+            this.addMessage('请先创建或启用长期记忆体', 'error');
+            return;
+        }
+        
+        try {
+            // 获取最近的对话内容
+            const messages = this.chatMessages.querySelectorAll('.message');
+            if (messages.length === 0) {
+                this.addMessage('没有对话内容可保存', 'error');
+                return;
+            }
+            
+            // 提取最近的用户消息和AI回复
+            let lastUserMessage = '';
+            let lastAiMessage = '';
+            
+            for (let i = messages.length - 1; i >= 0; i--) {
+                const message = messages[i];
+                if (message.classList.contains('user-message') && !lastUserMessage) {
+                    lastUserMessage = message.textContent.trim();
+                } else if (message.classList.contains('ai-message') && !lastAiMessage) {
+                    lastAiMessage = message.textContent.trim();
+                }
+                
+                if (lastUserMessage && lastAiMessage) break;
+            }
+            
+            if (!lastUserMessage || !lastAiMessage) {
+                this.addMessage('没有完整的对话内容可保存', 'error');
+                return;
+            }
+            
+            // 构建要保存的信息
+            const infoToSave = `用户问题: ${lastUserMessage}\n系统回答: ${lastAiMessage}`;
+            
+            const requestBody = {
+                info: infoToSave,
+                memory_id: this.currentMemoryId
+            };
+            
+            const response = await fetch('/api/memory/save', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify(requestBody)
+            });
+            
+            if (!response.ok) {
+                throw new Error(`保存记忆失败: ${response.status}`);
+            }
+            
+            const result = await response.json();
+            
+            if (result.code === 0) {
+                this.addMessage('对话内容已保存到长期记忆体', 'system');
+                console.log('对话内容保存成功');
+            } else {
+                throw new Error(result.message || '保存记忆失败');
+            }
+        } catch (error) {
+            console.error('保存记忆失败:', error);
+            this.addMessage(`保存记忆失败: ${error.message}`, 'error');
+        }
     }
     
     // 添加保存到历史记录的方法
@@ -348,6 +591,11 @@ class TerminologyHandler extends ChatHandler {
         } catch (error) {
             console.error('加载历史记录失败:', error);
         }
+    }
+
+    // 在展示回答内容前，去除所有形如[数字]的引用标号
+    removeReferenceMarks(text) {
+        return text.replace(/\[\d+\]/g, '');
     }
 }
 
