@@ -1,22 +1,21 @@
-import { VivoGPTService } from '../../vivogpt.js';
+import axios from 'axios';
 
-// 商品归类服务
+// 商品归类服务 - 通过HTTP请求Python后端
 export class ClassificationService {
     constructor() {
-        this.vivoGPT = new VivoGPTService();
+        this.apiBase = process.env.PY_API_BASE || 'http://localhost:3005';
     }
 
     // 商品归类查询
     async classifyProduct(productInfo) {
         try {
-            // 构建提示词
-            const prompt = `请根据以下商品信息进行海关商品归类：\n${JSON.stringify(productInfo, null, 2)}`;
-
-            const result = await this.vivoGPT.callModel(prompt);
-            
+            const res = await axios.post(`${this.apiBase}/api/query`, {
+                message: JSON.stringify(productInfo),
+                type: 'classification'
+            });
             return {
-                classification: result.content,
-                sessionId: result.sessionId
+                classification: res.data?.data?.content,
+                sessionId: res.data?.data?.session_id
             };
         } catch (error) {
             console.error('商品归类服务错误:', error);

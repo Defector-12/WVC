@@ -1,22 +1,21 @@
-import { VivoGPTService } from '../../vivogpt.js';
+import axios from 'axios';
 
-// 海关估价服务
+// 海关估价服务 - 通过HTTP请求Python后端
 export class ValuationService {
     constructor() {
-        this.vivoGPT = new VivoGPTService();
+        this.apiBase = process.env.PY_API_BASE || 'http://localhost:3005';
     }
 
     // 海关估价查询
     async getValuation(productInfo) {
         try {
-            // 构建提示词
-            const prompt = `请根据以下商品信息进行海关估价分析：\n${JSON.stringify(productInfo, null, 2)}`;
-
-            const result = await this.vivoGPT.callModel(prompt);
-            
+            const res = await axios.post(`${this.apiBase}/api/query`, {
+                message: JSON.stringify(productInfo),
+                type: 'valuation'
+            });
             return {
-                valuation: result.content,
-                sessionId: result.sessionId
+                valuation: res.data?.data?.content,
+                sessionId: res.data?.data?.session_id
             };
         } catch (error) {
             console.error('海关估价服务错误:', error);

@@ -140,10 +140,9 @@ class TerminologyHandler extends ChatHandler {
             // 处理响应
             if (response && response.code === 0 && response.data && response.data.content) {
                 // 在聊天区域显示结果
-                const cleanContent = this.removeReferenceMarks(response.data.content);
-                this.addMessage(cleanContent, 'ai');
+                this.addMessage(response.data.content, 'ai');
                 
-                // 如果是翻译结果且存在专门的翻译结果区域，也显示结果
+                // 如果是翻译结果且存在专门的翻译结果区域，也显示完整内容
                 if (messageType === 'translation' && this.translationResult && this.translationText) {
                     this.translationText.textContent = response.data.content;
                     if (this.explanationText && response.data.explanation) {

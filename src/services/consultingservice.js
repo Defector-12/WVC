@@ -1,22 +1,20 @@
-import { VivoGPTService } from '../../vivogpt.js';
+import axios from 'axios';
 
-// 关务咨询服务
+// 关务咨询服务 - 通过HTTP请求Python后端
 export class ConsultingService {
     constructor() {
-        this.vivoGPT = new VivoGPTService();
+        this.apiBase = process.env.PY_API_BASE || 'http://localhost:3005';
     }
 
     // 开始咨询会话
     async startConsultation(question) {
         try {
-            // 构建提示词
-            const prompt = `请回答以下关务咨询问题：\n${question}`;
-
-            const result = await this.vivoGPT.callModel(prompt);
-            
+            const res = await axios.post(`${this.apiBase}/api/chat`, {
+                message: question
+            });
             return {
-                answer: result.content,
-                sessionId: result.sessionId
+                answer: res.data?.data?.content,
+                sessionId: res.data?.data?.session_id
             };
         } catch (error) {
             console.error('关务咨询服务错误:', error);
@@ -30,11 +28,13 @@ export class ConsultingService {
             throw new Error('会话ID不能为空');
         }
         try {
-            const result = await this.vivoGPT.callModel(question);
-            
+            const res = await axios.post(`${this.apiBase}/api/chat`, {
+                message: question,
+                session_id: sessionId
+            });
             return {
-                answer: result.content,
-                sessionId: result.sessionId
+                answer: res.data?.data?.content,
+                sessionId: res.data?.data?.session_id
             };
         } catch (error) {
             console.error('关务咨询服务错误:', error);
